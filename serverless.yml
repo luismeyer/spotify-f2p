@@ -4,13 +4,16 @@ service: spotify-f2p
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs10.x
   stage: dev
   region: eu-central-1
   iamRoleStatements:
     - Effect: "Allow"
       Action:
-        - "secretsmanager:*"
+        - "secretsmanager:DescribeSecret"
+        - "secretsmanager:GetSecretValue"
+        - "secretsmanager:CreateSecret"
+        - "secretsmanager:PutSecretValue"
       Resource: "*"
 
 functions:
