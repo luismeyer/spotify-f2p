@@ -5,10 +5,11 @@
   "main": "src/handlers/sync.js",
   "scripts": {
     "start": "sam local invoke --no-event -t template.yml",
-    "setup": "node src/setup/server.js",
-    "deploy:new": "sam deploy --guided",
     "deploy": "sam deploy",
-    "build": "sam build"
+    "deploy:new": "sam deploy --guided",
+    "build": "sam build",
+    "setup": "node src/scripts/setup/server.js",
+    "search:playlist": "node src/scripts/playlist-id.js"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +20,8 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "open": "^7.2.1",
-    "request": "^2.88.2"
+    "meow": "^7.1.1",
+    "open": "^7.2.1"
   }
 }

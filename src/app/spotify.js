@@ -12,13 +12,11 @@ const SPOTIFY_BASIC_TOKEN = Buffer.from(
   `${CLIENT_ID}:${CLIENT_SECRET}`
 ).toString("base64");
 
-let TOKEN;
-
-module.exports.spotifyFetch = spotifyFetch = (endpoint, options) =>
+module.exports.spotifyFetch = spotifyFetch = (token, endpoint, options) =>
   fetch(`https://api.spotify.com/v1${endpoint}`, {
     ...options,
     headers: {
-      Authorization: "Bearer " + TOKEN,
+      Authorization: "Bearer " + token,
     },
   })
     .then((res) => res.json())
@@ -41,25 +39,27 @@ module.exports.refreshToken = async () => {
   })
     .then((res) => res.json())
     .then(async (body) => {
-      TOKEN = body.access_token;
       console.info("Token expires in ", body.expires_in);
 
       if (body.refresh_token) {
-        return putRefreshToken(body.refresh_token);
+        await putRefreshToken(body.refresh_token);
       }
+
+      return body.access_token;
     });
 };
 
-module.exports.getPlaylistTracks = (offset, limit) =>
+module.exports.getPlaylistTracks = (token, offset, limit) =>
   spotifyFetch(
+    token,
     `/playlists/${PLAYLIST_ID}/tracks?offset=${offset}&limit=${limit}`,
     { method: "GET" }
   ).catch((err) => {
     throw Error("playlist tracks", err);
   });
 
-module.exports.removeTracksFromPlaylist = (tracks) =>
-  spotifyFetch(`/playlists/${PLAYLIST_ID}/tracks`, {
+module.exports.removeTracksFromPlaylist = (token, tracks) =>
+  spotifyFetch(token, `/playlists/${PLAYLIST_ID}/tracks`, {
     method: "DELETE",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify({ tracks }),
@@ -67,16 +67,23 @@ module.exports.removeTracksFromPlaylist = (tracks) =>
     throw Error("remove tracks", err);
   });
 
-module.exports.getSavedTracks = (offset) =>
-  spotifyFetch(`/me/tracks?offset=${offset}`).catch((err) => {
+module.exports.getSavedTracks = (token, offset) =>
+  spotifyFetch(token, `/me/tracks?offset=${offset}`).catch((err) => {
     throw Error("saved tracks", err);
   });
 
-module.exports.addTracksToPlaylist = (tracks) =>
-  spotifyFetch(`/playlists/${PLAYLIST_ID}/tracks`, {
+module.exports.addTracksToPlaylist = (token, tracks) =>
+  spotifyFetch(token, `/playlists/${PLAYLIST_ID}/tracks`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify({ uris: tracks }),
   }).catch((err) => {
-    throw Error("remove tracks", err);
+    throw Error("add tracks", err);
   });
+
+module.exports.getPlaylists = (token, offset, limit) =>
+  spotifyFetch(token, `/me/playlists?offset=${offset}&limit=${limit}`).catch(
+    (err) => {
+      throw Error("get playlist", err);
+    }
+  );

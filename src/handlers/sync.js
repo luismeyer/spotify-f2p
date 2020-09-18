@@ -1,17 +1,19 @@
 require("dotenv").config();
+
 const { refreshToken } = require("../app/spotify");
 const { clearPlaylist, loadSavedTracks, syncSavedTracks } = require("../app");
 
 exports.syncHandler = async () => {
-  await refreshToken();
+  const token = await refreshToken();
+  if (!token) return false;
 
-  await clearPlaylist();
+  await clearPlaylist(token);
   console.info("Cleared Playlist");
 
-  const savedTracksBatches = await loadSavedTracks();
+  const savedTracksBatches = await loadSavedTracks(token);
   console.info("Loaded saved Tracks");
 
-  await syncSavedTracks(savedTracksBatches);
+  await syncSavedTracks(token, savedTracksBatches);
   console.info("Saved tracks to playlist");
 
   return true;

@@ -1,26 +1,59 @@
 # Spotify f2p 🎶
 
-Spotify-f2p is an Node AWS Lambda triggered by a cron schedule which syncs all tracks from your private library into a playlist. The code is build and deployed using the AWS sam cli.
+[![build shield](https://img.shields.io/github/workflow/status/luismeyer/spotify-f2p/Deploy%20master%20branch/master)](https://github.com/luismeyer/spotify-f2p/actions)
+[![issues shield](https://img.shields.io/github/issues/luismeyer/spotify-f2p)](https://github.com/luismeyer/spotify-f2p/issues)
+![repo size shield](https://img.shields.io/github/repo-size/luismeyer/spotify-f2p)
+![version shield](https://img.shields.io/github/package-json/v/luismeyer/spotify-f2p)
+
+Spotify-f2p is a Node AWS Lambda triggered by a cron schedule which syncs all tracks from your private library into a playlist. The code is build and deployed using the AWS sam cli.
 
 ## Development 👩‍💻👨‍💻
 
-1. Configure the .env and (if necessary) the constants.js file
+1. Create a .env file based on the .env example and configure it with your credentials
 2. Execute the setup script on your local machine to initially obtain a spotify-refresh-token
 
    ```bash
    npm run setup
    ```
 
-3. Invoke the local lambda function
+3. Invoke the lambda function local ([Docker](https://www.docker.com/) required)
 
    ```bash
    npm start
    ```
 
+## Build 🏗
+
+Use AWS sam to build the Application
+
+```bash
+npm run build
+```
+
 ## Deployment 🚀
 
-Deploy to AWS from your local machine or by using the github action. After that enter the Environment variables in AWS lambda.
+Deploy the application to AWS either from your local machine or by using the github action. After that enter the Environment variables in the AWS lambda ui.
+
+If you deploy for the first time:
+
+```bash
+npm run deploy:new
+```
+
+or just
 
 ```bash
 npm run deploy
 ```
+
+## Tipps and Tricks 🤓
+
+If you don't know the playlist ID you can execute the search-playlist script
+
+```bash
+npm run search:playlist -- --name <PLAYLIST_NAME>
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
