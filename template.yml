@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  spotify-f2p
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Resources:
+  Sync:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda function that syncs spotify songs
+      Runtime: nodejs12.x
+      Handler: src/handlers/sync.syncHandler
+      Timeout: 10
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 */1 * * ? *)
+      Policies:
+        - Statement:
+            - Sid: AWSSecretsManagerPolicy
+              Effect: Allow
+              Action:
+                - "secretsmanager:DescribeSecret"
+                - "secretsmanager:GetSecretValue"
+                - "secretsmanager:CreateSecret"
+                - "secretsmanager:PutSecretValue"
+              Resource: "*"

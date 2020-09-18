@@ -42,7 +42,7 @@ module.exports.refreshToken = async () => {
     .then((res) => res.json())
     .then(async (body) => {
       TOKEN = body.access_token;
-      console.info("Refresh body: ", body);
+      console.info("Token expires in ", body.expires_in);
 
       if (body.refresh_token) {
         return putRefreshToken(body.refresh_token);

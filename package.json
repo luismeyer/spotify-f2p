@@ -2,10 +2,13 @@
   "name": "spotify-f2p",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/handlers/sync.js",
   "scripts": {
-    "start": "node -e \"require('./src/app.js').handler()\"",
-    "setup": "node src/setup/server.js"
+    "start": "sam local invoke --no-event -t template.yml",
+    "setup": "node src/setup/server.js",
+    "deploy:new": "sam deploy --guided",
+    "deploy": "sam deploy",
+    "build": "sam build"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +22,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "open": "^7.2.1",
     "request": "^2.88.2",
     "serverless-plugin-include-dependencies": "^4.1.0"
   }

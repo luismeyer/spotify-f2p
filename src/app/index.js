@@ -1,15 +1,12 @@
-require("dotenv").config();
-
 const {
   getPlaylistTracks,
   trackUri,
   getSavedTracks,
   addTracksToPlaylist,
-  refreshToken,
   removeTracksFromPlaylist,
 } = require("./spotify");
 
-const clearPlaylist = async () => {
+module.exports.clearPlaylist = async () => {
   const batches = [];
   const limit = 100;
   let offset = 0;
@@ -29,7 +26,7 @@ const clearPlaylist = async () => {
   return Promise.all(batches.map(removeTracksFromPlaylist));
 };
 
-const loadSavedTracks = async () => {
+module.exports.loadSavedTracks = async () => {
   let offset = 0;
   let { items } = await getSavedTracks(0);
 
@@ -48,22 +45,7 @@ const loadSavedTracks = async () => {
   return songs;
 };
 
-const syncSavedTracks = (songs) =>
+module.exports.syncSavedTracks = (songs) =>
   Promise.all(
     songs.filter((tracks) => tracks.length > 0).map(addTracksToPlaylist)
   );
-
-module.exports.handler = async () => {
-  await refreshToken();
-
-  await clearPlaylist();
-  console.info("Cleared Playlist");
-
-  const savedTracksBatches = await loadSavedTracks();
-  console.info("Loaded saved Tracks");
-
-  await syncSavedTracks(savedTracksBatches);
-  console.info("Saved tracks to playlist");
-
-  return true;
-};

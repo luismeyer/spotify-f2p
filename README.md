@@ -1,6 +1,6 @@
-# Spotify f2p sync
+# Spotify f2p 🎶
 
-Spotify-f2p-sync is an AWS lambda which syncs all tracks from your private library into a playlist. The lambda is triggered by a cron schedule.
+Spotify-f2p is an AWS lambda which syncs all tracks from your private library into a playlist. The lambda is triggered by a cron schedule.
 
 ## Get started
 

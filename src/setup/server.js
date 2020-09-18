@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const open = require("open");
+
 const express = require("express"); // Express web server framework
 const request = require("request"); // "Request" library
 const cors = require("cors");
@@ -10,7 +12,7 @@ const {
   describeRefreshToken,
   createRefreshTokenSecret,
   putRefreshToken,
-} = require("../aws");
+} = require("../app/aws");
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -41,7 +43,9 @@ app.get("/login", function (req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = "user-read-private user-read-email";
+  let scope =
+    "playlist-modify-public playlist-read-private user-library-read playlist-modify-private user-read-email user-read-private";
+
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -50,6 +54,7 @@ app.get("/login", function (req, res) {
         scope: scope,
         redirect_uri: redirect_uri,
         state: state,
+        show_dialog: true,
       })
   );
 });
@@ -116,5 +121,6 @@ app.get("/callback", function (req, res) {
   }
 });
 
-console.log("Listening on 8080");
+console.log("Server listening to port 8080");
+open("http://localhost:8080");
 app.listen(8080);
