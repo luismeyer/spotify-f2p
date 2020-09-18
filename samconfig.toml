@@ -2,9 +2,8 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "spotify-f2p"
+capabilities = "CAPABILITY_IAM"
+region = "eu-central-1"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ptc9lcm3pezt"
 s3_prefix = "spotify-f2p"
-region = "eu-central-1"
-confirm_changeset = true
-capabilities = "CAPABILITY_IAM"
+stack_name = "spotify-f2p"
