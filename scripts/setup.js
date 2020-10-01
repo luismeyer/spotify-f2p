@@ -3,7 +3,10 @@ const fetch = require("node-fetch");
 const express = require("express");
 const querystring = require("querystring");
 const dotenv = require("dotenv");
-dotenv.config();
+const path = require("path");
+
+const configPath = path.resolve(__dirname, "../secrets/.env");
+dotenv.config({ path: configPath });
 
 const {
   describeRefreshToken,

@@ -4,13 +4,15 @@
   "description": "",
   "main": "src/handlers/sync.js",
   "scripts": {
-    "invoke": "sam local invoke --no-event -t template.yml",
+    "invoke": "sam local invoke --no-event",
     "watch": "npx tsc --watch",
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",
     "build": "npx tsc",
     "setup": "node scripts/setup.js",
-    "search": "node scripts/playlist-id.js"
+    "search": "node scripts/playlist-id.js",
+    "encrypt": "gpg --symmetric --cipher-algo AES256 secrets/.env",
+    "decrypt": "gpg --decrypt --output secrets/.env secrets/.env.gpg"
   },
   "keywords": [],
   "author": "",

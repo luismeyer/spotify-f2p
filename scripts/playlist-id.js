@@ -1,6 +1,9 @@
 const meow = require("meow");
 const dotenv = require("dotenv");
-dotenv.config();
+const path = require("path");
+
+const configPath = path.resolve(__dirname, "../secrets/.env");
+dotenv.config({ path: configPath });
 
 const { refreshToken } = require("../build/app/spotify");
 const { searchPlaylists } = require("../build/app");

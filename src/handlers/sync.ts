@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+
+const configPath = path.resolve(__dirname, "../../secrets/.env");
+dotenv.config({ path: configPath });
 
 import { refreshToken } from "../app/spotify";
 import { clearPlaylist, loadSavedTracks, syncSavedTracks } from "../app";

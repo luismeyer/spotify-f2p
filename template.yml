@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Description: >-
   spotify-f2p
 
-Transform:
-  - AWS::Serverless-2016-10-31
+Transform: AWS::Serverless-2016-10-31
 
 Resources:
   Sync:
