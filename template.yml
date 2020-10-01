@@ -11,7 +11,7 @@ Resources:
     Properties:
       Description: A Lambda function that syncs spotify songs
       Runtime: nodejs12.x
-      Handler: src/handlers/sync.syncHandler
+      Handler: dist/handlers/sync.syncHandler
       Timeout: 10
       Events:
         CloudWatchEvent:

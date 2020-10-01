@@ -1,9 +1,10 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const { refreshToken } = require("../app/spotify");
-const { clearPlaylist, loadSavedTracks, syncSavedTracks } = require("../app");
+import { refreshToken } from "../app/spotify";
+import { clearPlaylist, loadSavedTracks, syncSavedTracks } from "../app";
 
-exports.syncHandler = async () => {
+export const syncHandler = async () => {
   const token = await refreshToken();
   if (!token) return false;
 

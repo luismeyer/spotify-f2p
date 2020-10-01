@@ -1,13 +1,13 @@
-const {
+import {
   getPlaylistTracks,
   trackUri,
   getSavedTracks,
   addTracksToPlaylist,
   removeTracksFromPlaylist,
   getPlaylists,
-} = require("./spotify");
+} from "./spotify";
 
-module.exports.clearPlaylist = async (token) => {
+export const clearPlaylist = async (token: string) => {
   const limit = 100;
   let offset = 0;
 
@@ -30,12 +30,12 @@ module.exports.clearPlaylist = async (token) => {
   );
 };
 
-module.exports.loadSavedTracks = async (token) => {
+export const loadSavedTracks = async (token: string) => {
   let offset = 0;
   let { items } = await getSavedTracks(token, 0);
 
   let index = 0;
-  let songs = [];
+  let songs = [] as string[][];
 
   while (items.length > 0) {
     const songUris = items.map(({ track }) => trackUri(track.id));
@@ -49,14 +49,14 @@ module.exports.loadSavedTracks = async (token) => {
   return songs;
 };
 
-module.exports.syncSavedTracks = (token, songs) =>
+export const syncSavedTracks = (token: string, songs: string[][]) =>
   Promise.all(
     songs
       .filter((tracks) => tracks.length > 0)
       .map((tracks) => addTracksToPlaylist(token, tracks))
   );
 
-module.exports.searchPlaylists = async (token, name) => {
+export const searchPlaylists = async (token: string, name: string) => {
   const limit = 50;
   let offset = 0;
 

@@ -1,16 +1,15 @@
-require("dotenv").config();
+import open from "open";
+import fetch from "node-fetch";
+import express from "express";
+import querystring from "querystring";
+import dotenv from "dotenv";
+dotenv.config();
 
-const open = require("open");
-const fetch = require("node-fetch");
-
-const express = require("express");
-const querystring = require("querystring");
-
-const {
+import {
   describeRefreshToken,
   createRefreshTokenSecret,
   putRefreshToken,
-} = require("../../app/aws");
+} from "../app/aws";
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 
@@ -22,9 +21,9 @@ const SPOTIFY_BASIC_HEADER =
   "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
 
 const redirect_uri = "http://localhost:8080/callback";
-let safedState;
+let safedState: string;
 
-const generateRandomString = function (length) {
+const generateRandomString = function (length: number) {
   let text = "";
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

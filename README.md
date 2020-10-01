@@ -51,7 +51,7 @@ npm run deploy
 If you don't know the playlist ID you can execute the search-playlist script
 
 ```bash
-npm run search:playlist -- --name <PLAYLIST_NAME>
+npm run search -- --name <PLAYLIST_NAME>
 ```
 
 ## License
