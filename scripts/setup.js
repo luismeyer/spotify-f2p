@@ -9,7 +9,7 @@ const {
   describeRefreshToken,
   createRefreshTokenSecret,
   putRefreshToken,
-} = require("../src/app/aws");
+} = require("../build/app/aws");
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 
@@ -18,7 +18,7 @@ if (!CLIENT_SECRET) throw Error("Missing Env: 'CLIENT_SECRET'");
 if (!PLAYLIST_ID) throw Error("Missing Env: 'PLAYLIST_ID'");
 
 const SPOTIFY_BASIC_HEADER =
-  "Basic " + Buffer.require(`${CLIENT_ID}:${CLIENT_SECRET}`.toString("base64"));
+  "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
 
 const redirect_uri = "http://localhost:8080/callback";
 let safedState;
@@ -60,6 +60,7 @@ app.get("/callback", function (req, res) {
       .then(async (body) => {
         const { access_token, refresh_token } = body;
 
+        console.log(body);
         // Safe Token in AWS SM
         await describeRefreshToken().catch((err) => {
           if (err.code === "ResourceNotFoundException") return;

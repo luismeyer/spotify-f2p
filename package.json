@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/handlers/sync.js",
   "scripts": {
-    "start": "sam local invoke --no-event -t template.yml",
+    "invoke": "sam local invoke --no-event -t template.yml",
     "watch": "npx tsc --watch",
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",

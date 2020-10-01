@@ -2,8 +2,8 @@ const meow = require("meow");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const { refreshToken } = require("../dist/app/spotify");
-const { searchPlaylists } = require("../dist/app");
+const { refreshToken } = require("../build/app/spotify");
+const { searchPlaylists } = require("../build/app");
 
 const cli = meow(
   `
