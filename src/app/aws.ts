@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { PromiseResult } from "aws-sdk/lib/request";
 import { RefreshTokenKey } from "./constants";
 
 AWS.config.region = "eu-central-1";

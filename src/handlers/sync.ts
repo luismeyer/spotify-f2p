@@ -9,7 +9,9 @@ import { clearPlaylist, loadSavedTracks, syncSavedTracks } from "../app";
 
 export const syncHandler = async () => {
   const token = await refreshToken();
-  if (!token) return false;
+  if (!token) {
+    return false;
+  }
 
   await clearPlaylist(token);
   console.info("Cleared Playlist");

@@ -11,18 +11,24 @@ import {
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 
-if (!CLIENT_ID) throw Error("Missing Env: 'CLIENT_ID'");
-if (!CLIENT_SECRET) throw Error("Missing Env: 'CLIENT_SECRET'");
-if (!PLAYLIST_ID) throw Error("Missing Env: 'PLAYLIST_ID'");
+if (!CLIENT_ID) {
+  throw Error("Missing Env: 'CLIENT_ID'");
+}
+if (!CLIENT_SECRET) {
+  throw Error("Missing Env: 'CLIENT_SECRET'");
+}
+if (!PLAYLIST_ID) {
+  throw Error("Missing Env: 'PLAYLIST_ID'");
+}
 
 const SPOTIFY_BASIC_TOKEN = Buffer.from(
-  `${CLIENT_ID}:${CLIENT_SECRET}`
+  `${CLIENT_ID}:${CLIENT_SECRET}`,
 ).toString("base64");
 
 export const spotifyFetch = <T>(
   token: string,
   endpoint: string,
-  options?: Partial<RequestInit>
+  options?: Partial<RequestInit>,
 ) =>
   fetch(`https://api.spotify.com/v1${endpoint}`, {
     ...options,
@@ -63,12 +69,12 @@ export const refreshToken = async (): Promise<string> => {
 export const getPlaylistTracks = (
   token: string,
   offset: number,
-  limit: number
+  limit: number,
 ) =>
   spotifyFetch<TracksResponse>(
     token,
     `/playlists/${PLAYLIST_ID}/tracks?offset=${offset}&limit=${limit}`,
-    { method: "GET" }
+    { method: "GET" },
   ).catch((err) => {
     throw Error(`playlist tracks ${err}`);
   });
@@ -86,7 +92,7 @@ export const getSavedTracks = (token: string, offset: number) =>
   spotifyFetch<TracksResponse>(token, `/me/tracks?offset=${offset}`).catch(
     (err) => {
       throw Error(`saved tracks ${err}`);
-    }
+    },
   );
 
 export const addTracksToPlaylist = (token: string, tracks: string[]) =>
@@ -101,7 +107,7 @@ export const addTracksToPlaylist = (token: string, tracks: string[]) =>
 export const getPlaylists = (token: string, offset: number, limit: number) =>
   spotifyFetch<PlaylistsResponse>(
     token,
-    `/me/playlists?offset=${offset}&limit=${limit}`
+    `/me/playlists?offset=${offset}&limit=${limit}`,
   ).catch((err) => {
     throw Error(`get playlist ${err}`);
   });

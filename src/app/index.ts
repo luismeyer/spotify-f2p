@@ -1,3 +1,4 @@
+import { TrackUri } from "./typings";
 import {
   getPlaylistTracks,
   trackUri,
@@ -18,7 +19,7 @@ export const clearPlaylist = async (token: string) => {
     batches.push(
       items.map(({ track }) => ({
         uri: trackUri(track.id),
-      }))
+      })),
     );
 
     offset += limit;
@@ -26,7 +27,7 @@ export const clearPlaylist = async (token: string) => {
   }
 
   return Promise.all(
-    batches.map((tracks) => removeTracksFromPlaylist(token, tracks))
+    batches.map((tracks) => removeTracksFromPlaylist(token, tracks)),
   );
 };
 
@@ -35,7 +36,7 @@ export const loadSavedTracks = async (token: string) => {
   let { items } = await getSavedTracks(token, 0);
 
   let index = 0;
-  let songs = [] as string[][];
+  const songs = [] as string[][];
 
   while (items.length > 0) {
     const songUris = items.map(({ track }) => trackUri(track.id));
@@ -53,7 +54,7 @@ export const syncSavedTracks = (token: string, songs: string[][]) =>
   Promise.all(
     songs
       .filter((tracks) => tracks.length > 0)
-      .map((tracks) => addTracksToPlaylist(token, tracks))
+      .map((tracks) => addTracksToPlaylist(token, tracks)),
   );
 
 export const searchPlaylists = async (token: string, name: string) => {
@@ -63,8 +64,10 @@ export const searchPlaylists = async (token: string, name: string) => {
   let { items } = await getPlaylists(token, offset, limit);
 
   while (items.length > 0) {
-    let result = items.find((playlist) => playlist.name === name);
-    if (result) return result;
+    const result = items.find((playlist) => playlist.name === name);
+    if (result) {
+      return result;
+    }
 
     offset += limit;
     items = (await getPlaylists(token, offset, limit)).items;

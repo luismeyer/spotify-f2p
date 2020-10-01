@@ -10,5 +10,6 @@
     "!Select sequence",
     "!Split sequence",
     "!Sub"
-  ]
+  ],
+  "editor.tabSize": 2
 }
