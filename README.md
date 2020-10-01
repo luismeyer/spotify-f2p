@@ -13,13 +13,13 @@ Spotify-f2p is a Node AWS Lambda triggered by a cron schedule which syncs all tr
 2. Execute the setup script on your local machine to initially obtain a spotify-refresh-token
 
    ```bash
-   npm run setup
+   yarn setup
    ```
 
 3. Invoke the lambda function local ([Docker](https://www.docker.com/) required)
 
    ```bash
-   npm start
+   yarn invoke
    ```
 
 ## Build 🏗
@@ -27,7 +27,7 @@ Spotify-f2p is a Node AWS Lambda triggered by a cron schedule which syncs all tr
 Use AWS sam to build the Application
 
 ```bash
-npm run build
+yarn build
 ```
 
 ## Deployment 🚀
@@ -37,13 +37,13 @@ Deploy the application to AWS either from your local machine or by using the git
 If you deploy for the first time:
 
 ```bash
-npm run deploy:new
+yarn deploy:new
 ```
 
 or just
 
 ```bash
-npm run deploy
+yarn deploy
 ```
 
 ## Tipps and Tricks 🤓
@@ -51,7 +51,7 @@ npm run deploy
 If you don't know the playlist ID you can execute the search-playlist script
 
 ```bash
-npm run search -- --name <PLAYLIST_NAME>
+yarn search -- --name <PLAYLIST_NAME>
 ```
 
 ## License
