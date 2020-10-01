@@ -1,16 +1,12 @@
-const AWS = require("aws-sdk");
-const { RefreshTokenKey } = require("./constants");
+import AWS from "aws-sdk";
+import { RefreshTokenKey } from "./constants";
 
-AWS.config = {
-  region: "eu-central-1",
-  apiVersions: {
-    secretsmanager: "2017-10-17",
-  },
-};
+AWS.config.region = "eu-central-1";
+AWS.config.apiVersion = "2017-10-17";
 
 const secretsmanager = new AWS.SecretsManager();
 
-module.exports.putRefreshToken = (secret) =>
+export const putRefreshToken = (secret: string) =>
   secretsmanager
     .putSecretValue({
       SecretId: RefreshTokenKey,
@@ -18,21 +14,21 @@ module.exports.putRefreshToken = (secret) =>
     })
     .promise();
 
-module.exports.getRefreshToken = () =>
+export const getRefreshToken = () =>
   secretsmanager
     .getSecretValue({
       SecretId: RefreshTokenKey,
     })
     .promise();
 
-module.exports.describeRefreshToken = () =>
+export const describeRefreshToken = () =>
   secretsmanager
     .describeSecret({
       SecretId: RefreshTokenKey,
     })
     .promise();
 
-module.exports.createRefreshTokenSecret = () =>
+export const createRefreshTokenSecret = () =>
   secretsmanager
     .createSecret({
       Name: RefreshTokenKey,

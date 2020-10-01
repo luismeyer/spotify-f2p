@@ -1,16 +1,15 @@
-require("dotenv").config();
-
 const open = require("open");
 const fetch = require("node-fetch");
-
 const express = require("express");
 const querystring = require("querystring");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const {
   describeRefreshToken,
   createRefreshTokenSecret,
   putRefreshToken,
-} = require("../../app/aws");
+} = require("../src/app/aws");
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 
@@ -19,7 +18,7 @@ if (!CLIENT_SECRET) throw Error("Missing Env: 'CLIENT_SECRET'");
 if (!PLAYLIST_ID) throw Error("Missing Env: 'PLAYLIST_ID'");
 
 const SPOTIFY_BASIC_HEADER =
-  "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+  "Basic " + Buffer.require(`${CLIENT_ID}:${CLIENT_SECRET}`.toString("base64"));
 
 const redirect_uri = "http://localhost:8080/callback";
 let safedState;
