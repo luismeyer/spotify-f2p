@@ -1,9 +1,9 @@
-import meow from "meow";
-import dotenv from "dotenv";
+const meow = require("meow");
+const dotenv = require("dotenv");
 dotenv.config();
 
-import { refreshToken } from "../app/spotify";
-import { searchPlaylists } from "../app";
+const { refreshToken } = require("../dist/app/spotify");
+const { searchPlaylists } = require("../dist/app");
 
 const cli = meow(
   `
