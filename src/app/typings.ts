@@ -1,3 +1,8 @@
+export type Error = {
+  status: number;
+  message: string;
+};
+
 export type TokenResponse = {
   access_token: string;
   token_type: string;
@@ -8,20 +13,21 @@ export type TokenResponse = {
 
 export type SnapshotResponse = {
   snapshot_id: string;
+  error?: Error;
 };
 
-export type BaseResponse = {
+export type BaseResponse<T = {}> = {
   href: string;
   limit: number;
   next: string;
   offset: number;
   previous: string;
   total: number;
+  error?: Error;
+  items: T[];
 };
 
-export type PlaylistsResponse = BaseResponse & {
-  items: Playlist[];
-};
+export type PlaylistsResponse = BaseResponse<Playlist>;
 
 export type Playlist = {
   collaborative: boolean;
@@ -31,12 +37,12 @@ export type Playlist = {
   name: string;
 };
 
-export type TracksResponse = BaseResponse & {
-  items: {
-    added_at: string;
-    is_local: boolean;
-    track: Track;
-  }[];
+export type TracksResponse = BaseResponse<TrackResponse>;
+
+export type TrackResponse = {
+  added_at: string;
+  is_local: boolean;
+  track: Track;
 };
 
 export type TrackUri = {

@@ -1,4 +1,4 @@
-import { TrackUri } from "./typings";
+import { asyncIteration, chunkArray } from "./utils";
 import {
   getPlaylistTracks,
   trackUri,
@@ -6,72 +6,63 @@ import {
   addTracksToPlaylist,
   removeTracksFromPlaylist,
   getPlaylists,
+  simplifyTrack,
+  iterateTracksRequest,
 } from "./spotify";
 
 export const clearPlaylist = async (token: string) => {
   const limit = 100;
-  let offset = 0;
 
-  const batches = [];
-  let { items } = await getPlaylistTracks(token, offset, limit);
+  // Fetch all songs of the Playlist
+  const result = await iterateTracksRequest(limit, (offset: number) =>
+    getPlaylistTracks(token, offset, limit),
+  );
 
-  while (items.length > 0) {
-    batches.push(
-      items.map(({ track }) => ({
-        uri: trackUri(track.id),
-      })),
-    );
+  // Format Fetch Resul to have the right batch size and format
+  const batches = chunkArray(result, 100).map((batch) =>
+    batch.map(({ track }) => simplifyTrack(track)),
+  );
 
-    offset += limit;
-    items = (await getPlaylistTracks(token, offset, limit)).items;
-  }
-
-  return Promise.all(
-    batches.map((tracks) => removeTracksFromPlaylist(token, tracks)),
+  // Remove all Tracks with an async for loop to prevent spotify internal Server errors
+  return asyncIteration(
+    batches,
+    async (batch) => await removeTracksFromPlaylist(token, batch),
   );
 };
 
 export const loadSavedTracks = async (token: string) => {
-  let offset = 0;
-  let { items } = await getSavedTracks(token, 0);
+  const limit = 50;
 
-  let index = 0;
-  const songs = [] as string[][];
+  // Fetch all songs from the libary
+  const result = await iterateTracksRequest(limit, (offset: number) =>
+    getSavedTracks(token, offset, limit),
+  );
 
-  while (items.length > 0) {
-    const songUris = items.map(({ track }) => trackUri(track.id));
-    songs[index] = songs[index] ? [...songs[index], ...songUris] : songUris;
-    index = songs[index].length === 100 ? index + 1 : index;
+  // Format Fetch Resul to have the right batch size and format
+  const batches = chunkArray(result, 100).map((batch) =>
+    batch.map((t) => {
+      return trackUri(t.track.id);
+    }),
+  );
 
-    offset += 20;
-    items = (await getSavedTracks(token, offset)).items;
-  }
-
-  return songs;
+  return batches;
 };
 
-export const syncSavedTracks = (token: string, songs: string[][]) =>
-  Promise.all(
-    songs
-      .filter((tracks) => tracks.length > 0)
-      .map((tracks) => addTracksToPlaylist(token, tracks)),
+export const syncSavedTracks = (token: string, songs: string[][]) => {
+  // Add all songs to the Playlist with an async for loop to prevent spotify internal Server errors
+  return asyncIteration(
+    songs,
+    async (tracks) => await addTracksToPlaylist(token, tracks),
   );
+};
 
 export const searchPlaylists = async (token: string, name: string) => {
   const limit = 50;
-  let offset = 0;
 
-  let { items } = await getPlaylists(token, offset, limit);
+  // Fetch all playlists
+  const result = await iterateTracksRequest(limit, (offset: number) =>
+    getPlaylists(token, offset, limit),
+  );
 
-  while (items.length > 0) {
-    const result = items.find((playlist) => playlist.name === name);
-    if (result) {
-      return result;
-    }
-
-    offset += limit;
-    items = (await getPlaylists(token, offset, limit)).items;
-  }
-
-  return;
+  return result.find((playlist) => playlist.name === name);
 };
