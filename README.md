@@ -51,7 +51,7 @@ yarn deploy
 If you don't know the playlist ID you can execute the search-playlist script
 
 ```bash
-yarn search -- --name <PLAYLIST_NAME>
+yarn search --name <PLAYLIST_NAME>
 ```
 
 ## License
