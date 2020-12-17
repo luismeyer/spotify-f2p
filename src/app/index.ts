@@ -7,14 +7,14 @@ import {
   removeTracksFromPlaylist,
   getPlaylists,
   simplifyTrack,
-  iterateTracksRequest,
+  iterateItemsRequest,
 } from "./spotify";
 
 export const clearPlaylist = async (token: string) => {
   const limit = 100;
 
   // Fetch all songs of the Playlist
-  const result = await iterateTracksRequest(limit, (offset: number) =>
+  const result = await iterateItemsRequest(limit, (offset: number) =>
     getPlaylistTracks(token, offset, limit),
   );
 
@@ -34,7 +34,7 @@ export const loadSavedTracks = async (token: string) => {
   const limit = 50;
 
   // Fetch all songs from the libary
-  const result = await iterateTracksRequest(limit, (offset: number) =>
+  const result = await iterateItemsRequest(limit, (offset: number) =>
     getSavedTracks(token, offset, limit),
   );
 
@@ -60,7 +60,7 @@ export const searchPlaylists = async (token: string, name: string) => {
   const limit = 50;
 
   // Fetch all playlists
-  const result = await iterateTracksRequest(limit, (offset: number) =>
+  const result = await iterateItemsRequest(limit, (offset: number) =>
     getPlaylists(token, offset, limit),
   );
 

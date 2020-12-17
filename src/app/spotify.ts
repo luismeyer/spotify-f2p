@@ -74,7 +74,7 @@ export const refreshToken = async (): Promise<string> => {
     });
 };
 
-export const iterateTracksRequest = async <T extends BaseResponse>(
+export const iterateItemsRequest = async <T extends BaseResponse>(
   limit: number,
   request: (offset: number) => Promise<T>,
 ) => {
