@@ -1,37 +1,58 @@
 import AWS from "aws-sdk";
-import { PromiseResult } from "aws-sdk/lib/request";
-import { RefreshTokenKey } from "./constants";
+import { RefreshTokenKey, TableName } from "./constants";
 
 AWS.config.region = "eu-central-1";
-AWS.config.apiVersion = "2017-10-17";
 
-const secretsmanager = new AWS.SecretsManager();
+const dynamodb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+
+const converter = AWS.DynamoDB.Converter;
 
 export const putRefreshToken = (secret: string) =>
-  secretsmanager
-    .putSecretValue({
-      SecretId: RefreshTokenKey,
-      SecretString: secret,
+  dynamodb
+    .putItem({
+      TableName,
+      Item: converter.marshall({
+        id: RefreshTokenKey,
+        value: secret,
+      }),
     })
     .promise();
 
-export const getRefreshToken = () =>
-  secretsmanager
-    .getSecretValue({
-      SecretId: RefreshTokenKey,
+export const getRefreshToken = (): Promise<string> =>
+  dynamodb
+    .getItem({
+      TableName,
+      Key: converter.marshall({
+        id: RefreshTokenKey,
+      }),
     })
-    .promise();
+    .promise()
+    .then((res) => (res.Item ? converter.output(res.Item.value) : ""));
 
-export const describeRefreshToken = () =>
-  secretsmanager
-    .describeSecret({
-      SecretId: RefreshTokenKey,
+export const describeTable = () =>
+  dynamodb
+    .describeTable({
+      TableName,
     })
-    .promise();
+    .promise()
+    .then((res) => res.Table);
 
-export const createRefreshTokenSecret = () =>
-  secretsmanager
-    .createSecret({
-      Name: RefreshTokenKey,
+export const createTable = () =>
+  dynamodb
+    .createTable({
+      TableName,
+      AttributeDefinitions: [
+        {
+          AttributeName: "id",
+          AttributeType: "S",
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: "id",
+          KeyType: "HASH",
+        },
+      ],
+      BillingMode: "PAY_PER_REQUEST",
     })
     .promise();

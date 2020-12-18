@@ -9,9 +9,9 @@ const configPath = path.resolve(__dirname, "../secrets/.env");
 dotenv.config({ path: configPath });
 
 const {
-  describeRefreshToken,
-  createRefreshTokenSecret,
   putRefreshToken,
+  describeTable,
+  createTable,
 } = require("../build/app/aws");
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
@@ -48,7 +48,7 @@ app.get("/callback", function (req, res) {
       "/#" +
         querystring.stringify({
           error: "state_mismatch",
-        })
+        }),
     );
   } else {
     fetch("https://accounts.spotify.com/api/token", {
@@ -63,21 +63,29 @@ app.get("/callback", function (req, res) {
       .then(async (body) => {
         const { access_token, refresh_token } = body;
 
-        console.log(body);
-        // Safe Token in AWS SM
-        await describeRefreshToken().catch((err) => {
-          if (err.code === "ResourceNotFoundException") return;
+        // Create Dynamodb Table
+        await createTable().catch(() =>
+          console.log("Tabelle existiert bereits"),
+        );
 
-          // Create Secret if it doesn't exist
-          return createRefreshTokenSecret();
-        });
+        // Wait for the Table to be fully created
+        let table = await describeTable();
+        while (table.TableStatus !== "ACTIVE") {
+          await new Promise((res) => {
+            setTimeout(res, 1000);
+          });
 
+          console.log("Creating table...");
+          table = await describeTable();
+        }
+
+        // Save the refreshtoken
         await putRefreshToken(refresh_token);
 
-        res.send("Success: you can close this window");
+        res.status(200).send("Success: you can close this window");
 
         console.log(
-          `Refresh Token: ${refresh_token}\nAccess Token: ${access_token}`
+          `Refresh Token: ${refresh_token}\nAccess Token: ${access_token}`,
         );
 
         server.close();
@@ -88,11 +96,11 @@ app.get("/callback", function (req, res) {
 
 const server = app.listen(8080);
 
-var state = generateRandomString(16);
+const state = generateRandomString(16);
 safedState = state;
 
 // your application requests authorization
-let scope =
+const scope =
   "playlist-modify-public playlist-read-private user-library-read playlist-modify-private user-read-email user-read-private";
 
 open(
@@ -100,9 +108,9 @@ open(
     querystring.stringify({
       response_type: "code",
       client_id: CLIENT_ID,
-      scope: scope,
-      redirect_uri: redirect_uri,
-      state: state,
+      scope,
+      redirect_uri,
+      state,
       show_dialog: true,
-    })
+    }),
 );

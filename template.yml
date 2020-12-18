@@ -14,17 +14,17 @@ Resources:
       Handler: build/handlers/sync.syncHandler
       Timeout: 20
       Events:
-        CloudWatchEvent:
-          Type: Schedule
+        HttpGet:
+          Type: Api
           Properties:
-            Schedule: cron(0 */3 * * ? *)
+            Path: '/sync/'
+            Method: get
       Policies:
         - Statement:
             - Sid: AWSSecretsManagerPolicy
               Effect: Allow
               Action:
-                - "secretsmanager:DescribeSecret"
-                - "secretsmanager:GetSecretValue"
-                - "secretsmanager:CreateSecret"
-                - "secretsmanager:PutSecretValue"
+                - "dynamodb:GetItem"
+                - "dynamodb:PutItem"
               Resource: "*"
+  
