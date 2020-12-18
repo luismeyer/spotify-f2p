@@ -22,5 +22,18 @@ export const syncHandler = async () => {
   await syncSavedTracks(token, savedTracksBatches);
   console.info("Saved tracks to playlist");
 
-  return true;
+  const tracksCount = savedTracksBatches.reduce(
+    (acc, curr) => curr.length + acc,
+    0,
+  );
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Content-Type": "text/html",
+    },
+    body: `<title>Success</title><h1>Alles Top</h1><span>${tracksCount} Song${
+      tracksCount === 1 ? "" : "s"
+    } wurden synchronisiert</span>`,
+  };
 };

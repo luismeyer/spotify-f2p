@@ -54,7 +54,7 @@ export const spotifyFetch = <T extends { error?: Error }>(
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
 export const refreshToken = async (): Promise<string> => {
-  const { SecretString } = await getRefreshToken();
+  const secret = await getRefreshToken();
 
   return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -62,7 +62,7 @@ export const refreshToken = async (): Promise<string> => {
       Authorization: `Basic ${SPOTIFY_BASIC_TOKEN}`,
       "Content-type": "application/x-www-form-urlencoded",
     },
-    body: `grant_type=refresh_token&refresh_token=${SecretString}`,
+    body: `grant_type=refresh_token&refresh_token=${secret}`,
   })
     .then((res) => res.json())
     .then(async (body: TokenResponse) => {
@@ -74,7 +74,7 @@ export const refreshToken = async (): Promise<string> => {
     });
 };
 
-export const iterateTracksRequest = async <T extends BaseResponse>(
+export const iterateItemsRequest = async <T extends BaseResponse>(
   limit: number,
   request: (offset: number) => Promise<T>,
 ) => {

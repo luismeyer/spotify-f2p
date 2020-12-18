@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/handlers/sync.js",
   "scripts": {
+    "start": "sam local start-api",
     "invoke": "sam local invoke --no-event",
     "watch": "npx tsc --watch",
     "deploy": "sam deploy",
