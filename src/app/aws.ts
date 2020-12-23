@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import { RefreshTokenKey, TableName } from "./constants";
+import { TableName } from "./constants";
 
 AWS.config.region = "eu-central-1";
 
@@ -7,27 +7,32 @@ const dynamodb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 const converter = AWS.DynamoDB.Converter;
 
-export const putRefreshToken = (secret: string) =>
+export const putRefreshToken = (
+  id: string,
+  token: string,
+  playlistId?: string,
+) =>
   dynamodb
     .putItem({
       TableName,
       Item: converter.marshall({
-        id: RefreshTokenKey,
-        value: secret,
+        id,
+        token,
+        playlistId,
       }),
     })
     .promise();
 
-export const getRefreshToken = (): Promise<string> =>
+export const getRefreshToken = (id: string): Promise<string> =>
   dynamodb
     .getItem({
       TableName,
       Key: converter.marshall({
-        id: RefreshTokenKey,
+        id,
       }),
     })
     .promise()
-    .then((res) => (res.Item ? converter.output(res.Item.value) : ""));
+    .then((res) => (res.Item ? converter.output(res.Item.token) : ""));
 
 export const describeTable = () =>
   dynamodb

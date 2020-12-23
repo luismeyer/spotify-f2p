@@ -1,5 +1,7 @@
 import fetch, { RequestInit } from "node-fetch";
+import querystring from "querystring";
 
+import { generateRandomString } from "./utils";
 import { putRefreshToken, getRefreshToken } from "./aws";
 import {
   PlaylistsResponse,
@@ -12,7 +14,13 @@ import {
   Error,
 } from "./typings";
 
-const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
+const {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  PLAYLIST_ID,
+  AWS_SAM_LOCAL,
+  LAMDBA_URL,
+} = process.env;
 
 if (!CLIENT_ID) {
   throw Error("Missing Env: 'CLIENT_ID'");
@@ -24,9 +32,10 @@ if (!PLAYLIST_ID) {
   throw Error("Missing Env: 'PLAYLIST_ID'");
 }
 
-const SPOTIFY_BASIC_TOKEN = Buffer.from(
-  `${CLIENT_ID}:${CLIENT_SECRET}`,
-).toString("base64");
+const SPOTIFY_BASIC_HEADER =
+  "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+
+const redirect_uri = AWS_SAM_LOCAL ? "http://localhost:3000/auth" : LAMDBA_URL;
 
 export const spotifyFetch = <T extends { error?: Error }>(
   token: string,
@@ -53,13 +62,13 @@ export const spotifyFetch = <T extends { error?: Error }>(
 
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
-export const refreshToken = async (): Promise<string> => {
-  const secret = await getRefreshToken();
+export const refreshToken = async (id: string): Promise<string> => {
+  const secret = await getRefreshToken(id);
 
   return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
-      Authorization: `Basic ${SPOTIFY_BASIC_TOKEN}`,
+      Authorization: SPOTIFY_BASIC_HEADER,
       "Content-type": "application/x-www-form-urlencoded",
     },
     body: `grant_type=refresh_token&refresh_token=${secret}`,
@@ -67,7 +76,7 @@ export const refreshToken = async (): Promise<string> => {
     .then((res) => res.json())
     .then(async (body: TokenResponse) => {
       if (body.refresh_token) {
-        await putRefreshToken(body.refresh_token);
+        await putRefreshToken(id, body.refresh_token);
       }
 
       return body.access_token;
@@ -144,3 +153,37 @@ export const getPlaylists = (token: string, offset: number, limit: number) =>
 export const simplifyTrack = (track: Track) => ({
   uri: trackUri(track.id),
 });
+
+export const generateAuthURL = () => {
+  const scope =
+    "playlist-modify-public playlist-read-private user-library-read playlist-modify-private user-read-email user-read-private";
+
+  const state = generateRandomString(16);
+
+  return (
+    "https://accounts.spotify.com/authorize?" +
+    querystring.stringify({
+      response_type: "code",
+      client_id: CLIENT_ID,
+      scope,
+      redirect_uri,
+      state,
+      show_dialog: true,
+    })
+  );
+};
+
+export const getToken = (code: string) =>
+  fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: SPOTIFY_BASIC_HEADER,
+      "Content-type": "application/x-www-form-urlencoded",
+    },
+    body: `code=${code}&redirect_uri=${redirect_uri}&grant_type=authorization_code`,
+  })
+    .then((res) => res.json())
+    .then(async (body) => ({
+      accessToken: body.access_token as string,
+      refreshToken: body.refresh_token as string,
+    }));

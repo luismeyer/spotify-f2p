@@ -56,13 +56,11 @@ export const syncSavedTracks = (token: string, songs: string[][]) => {
   );
 };
 
-export const searchPlaylists = async (token: string, name: string) => {
+export const allPlaylists = async (token: string) => {
   const limit = 50;
 
   // Fetch all playlists
-  const result = await iterateItemsRequest(limit, (offset: number) =>
+  return iterateItemsRequest(limit, (offset: number) =>
     getPlaylists(token, offset, limit),
   );
-
-  return result.find((playlist) => playlist.name === name);
 };

@@ -6,6 +6,28 @@ Description: >-
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
+  Auth:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda that authorizes Users for the spotify sync
+      Runtime: nodejs12.x
+      Handler: build/handlers/auth.authHandler
+      Timeout: 20
+      Events:
+        HttpGet:
+          Type: Api
+          Properties:
+            Path: '/auth/'
+            Method: get
+      Policies:
+        - Statement:
+            - Sid: F2PAuthRole
+              Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:CreateTable"
+              Resource: "*"
   Sync:
     Type: AWS::Serverless::Function
     Properties:
@@ -21,10 +43,9 @@ Resources:
             Method: get
       Policies:
         - Statement:
-            - Sid: AWSSecretsManagerPolicy
+            - Sid: F2PSyncRole
               Effect: Allow
               Action:
                 - "dynamodb:GetItem"
                 - "dynamodb:PutItem"
-              Resource: "*"
-  
+              Resource: "*"     

@@ -10,8 +10,6 @@
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",
     "build": "npx tsc",
-    "setup": "node scripts/setup.js",
-    "search": "node scripts/playlist-id.js",
     "encrypt": "gpg --symmetric --cipher-algo AES256 secrets/.env",
     "decrypt": "gpg --decrypt --output secrets/.env secrets/.env.gpg",
     "lint": "tslint 'src/**/*.{ts,tsx,js}'"
@@ -20,14 +18,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/aws-lambda": "^8.10.67",
+    "@types/node": "^14.11.2",
+    "@types/node-fetch": "^2.5.7",
     "aws-sdk": "^2.754.0",
     "dotenv": "^8.2.0",
+    "handlebars": "^4.7.6",
     "node-fetch": "^2.6.1",
-    "@types/node-fetch": "^2.5.7",
-    "@types/node": "^14.11.2"
+    "uniqid": "^5.2.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.8",
+    "@types/uniqid": "^5.2.0",
     "express": "^4.17.1",
     "husky": "^4.3.0",
     "meow": "^7.1.1",

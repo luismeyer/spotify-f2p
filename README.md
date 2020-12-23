@@ -19,7 +19,8 @@ Spotify-f2p is a Node AWS Lambda triggered by a cron schedule which syncs all tr
 3. Invoke the lambda function local ([Docker](https://www.docker.com/) required)
 
    ```bash
-   yarn invoke
+   yarn watch
+   yarn start
    ```
 
 ## Build 🏗
