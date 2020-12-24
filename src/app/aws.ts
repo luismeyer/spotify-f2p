@@ -7,6 +7,8 @@ const dynamodb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 const converter = AWS.DynamoDB.Converter;
 
+const { AWS_SAM_LOCAL } = process.env;
+
 export const putRefreshToken = (
   id: string,
   token: string,
@@ -61,3 +63,6 @@ export const createTable = () =>
       BillingMode: "PAY_PER_REQUEST",
     })
     .promise();
+
+export const lambdaBaseUrl = (path: string) =>
+  AWS_SAM_LOCAL ? "" : "/" + path.split("/")[0];

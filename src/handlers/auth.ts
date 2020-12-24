@@ -9,8 +9,13 @@ const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
 import { allPlaylists } from "../app";
-import { createTable, describeTable, putRefreshToken } from "../app/aws";
-import { generateAuthURL, getToken } from "../app/spotify";
+import {
+  createTable,
+  describeTable,
+  lambdaBaseUrl,
+  putRefreshToken,
+} from "../app/aws";
+import { generateAuthURL, getMe, getToken } from "../app/spotify";
 
 const setupTable = async () =>
   createTable()
@@ -33,7 +38,7 @@ export const authHandler = async (event: APIGatewayEvent) => {
   // Redirect to Spotify API Auth
   if (!event.queryStringParameters || !event.queryStringParameters.code) {
     return {
-      statusCode: 301,
+      statusCode: 302,
       headers: {
         Location: generateAuthURL(),
       },
@@ -41,18 +46,19 @@ export const authHandler = async (event: APIGatewayEvent) => {
   }
 
   const { code, playlistId, token } = event.queryStringParameters;
+  const baseUrl = lambdaBaseUrl(event.path);
 
   // Save refresh Token and redirect to Sync Page
   if (playlistId && token) {
     await setupTable();
 
-    const id = uniqid();
-    await putRefreshToken(id, token, playlistId);
+    const userId = uniqid();
+    await putRefreshToken(userId, token, playlistId);
 
     return {
-      statusCode: 301,
+      statusCode: 302,
       headers: {
-        Location: `/sync?id=${id}`,
+        Location: `${baseUrl}/sync?id=${userId}`,
       },
     };
   }
@@ -60,11 +66,15 @@ export const authHandler = async (event: APIGatewayEvent) => {
   // Get all playlists an render them
   const { refreshToken, accessToken } = await getToken(code);
 
+  const { id } = await getMe(accessToken);
+
   const playlists = await allPlaylists(accessToken).then((ps) =>
-    ps.map(({ name, id }) => ({
-      name,
-      link: `/auth?token=${refreshToken}&playlistId=${id}&code=used`,
-    })),
+    ps
+      .filter((p) => p.owner.id === id)
+      .map((p) => ({
+        name: p.name,
+        link: `${baseUrl}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
+      })),
   );
 
   const source = fs

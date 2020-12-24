@@ -11,6 +11,13 @@ export type TokenResponse = {
   refresh_token?: string;
 };
 
+export type UserResponse = {
+  id: string;
+  display_name: string;
+  href: string;
+  error?: Error;
+};
+
 export type SnapshotResponse = {
   snapshot_id: string;
   error?: Error;
@@ -35,6 +42,7 @@ export type Playlist = {
   href: string;
   id: string;
   name: string;
+  owner: UserResponse;
 };
 
 export type TracksResponse = BaseResponse<TrackResponse>;

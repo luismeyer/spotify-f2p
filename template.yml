@@ -48,4 +48,4 @@ Resources:
               Action:
                 - "dynamodb:GetItem"
                 - "dynamodb:PutItem"
-              Resource: "*"     
+              Resource: "*"

@@ -12,6 +12,7 @@ import {
   Track,
   BaseResponse,
   Error,
+  UserResponse,
 } from "./typings";
 
 const {
@@ -148,6 +149,11 @@ export const getPlaylists = (token: string, offset: number, limit: number) =>
     `/me/playlists?offset=${offset}&limit=${limit}`,
   ).catch((err) => {
     throw Error(`get playlist ${err}`);
+  });
+
+export const getMe = (token: string) =>
+  spotifyFetch<UserResponse>(token, `/me`).catch((err) => {
+    throw Error(`get me ${err}`);
   });
 
 export const simplifyTrack = (track: Track) => ({
