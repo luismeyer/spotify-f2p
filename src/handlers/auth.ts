@@ -4,18 +4,22 @@ import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
 import Handlebars from "handlebars";
+import { Bitly } from "bitly";
 
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
 import { allPlaylists } from "../app";
-import {
-  createTable,
-  describeTable,
-  lambdaBaseUrl,
-  putRefreshToken,
-} from "../app/aws";
+import { createTable, describeTable, putUserData } from "../app/aws";
 import { generateAuthURL, getMe, getToken } from "../app/spotify";
+import { isLocal, lambdaURL } from "../app/constants";
+
+const { BITLY_TOKEN } = process.env;
+if (!BITLY_TOKEN) {
+  throw new Error("Missing Env Variable: BITLY_TOKEN");
+}
+
+const bitly = new Bitly(BITLY_TOKEN);
 
 const setupTable = async () =>
   createTable()
@@ -53,12 +57,19 @@ export const authHandler = async (event: APIGatewayEvent) => {
     await setupTable();
 
     const userId = uniqid();
-    await putRefreshToken(userId, token, playlistId);
+
+    let url = `${lambdaURL}/sync?id=${userId}`;
+
+    if (!isLocal) {
+      url = await bitly.shorten(url).then((res) => res.link);
+    }
+
+    await putUserData(userId, token, playlistId, url);
 
     return {
       statusCode: 302,
       headers: {
-        Location: `${lambdaBaseUrl}/sync?id=${userId}`,
+        Location: url,
       },
     };
   }
@@ -73,7 +84,7 @@ export const authHandler = async (event: APIGatewayEvent) => {
       .filter((p) => p.owner.id === id)
       .map((p) => ({
         name: p.name,
-        link: `${lambdaBaseUrl}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
+        link: `${lambdaURL}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
       })),
   );
 

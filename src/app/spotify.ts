@@ -2,7 +2,7 @@ import fetch, { RequestInit } from "node-fetch";
 import querystring from "querystring";
 
 import { generateRandomString } from "./utils";
-import { putRefreshToken, getRefreshToken } from "./aws";
+import { putUserData, getUserData } from "./aws";
 import {
   PlaylistsResponse,
   SnapshotResponse,
@@ -14,14 +14,9 @@ import {
   Error,
   UserResponse,
 } from "./typings";
+import { lambdaURL } from "./constants";
 
-const {
-  CLIENT_ID,
-  CLIENT_SECRET,
-  PLAYLIST_ID,
-  AWS_SAM_LOCAL,
-  LAMDBA_URL,
-} = process.env;
+const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 
 if (!CLIENT_ID) {
   throw Error("Missing Env: 'CLIENT_ID'");
@@ -36,7 +31,7 @@ if (!PLAYLIST_ID) {
 const SPOTIFY_BASIC_HEADER =
   "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
 
-const redirect_uri = AWS_SAM_LOCAL ? "http://localhost:3000/auth" : LAMDBA_URL;
+const redirect_uri = lambdaURL + "/auth";
 
 export const spotifyFetch = <T extends { error?: Error }>(
   token: string,
@@ -63,8 +58,13 @@ export const spotifyFetch = <T extends { error?: Error }>(
 
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
-export const refreshToken = async (id: string): Promise<string> => {
-  const secret = await getRefreshToken(id);
+export const refreshToken = async (id: string) => {
+  const tokenResponse = await getUserData(id);
+  if (!tokenResponse) {
+    return Promise.resolve(undefined);
+  }
+
+  const { token } = tokenResponse;
 
   return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -72,15 +72,18 @@ export const refreshToken = async (id: string): Promise<string> => {
       Authorization: SPOTIFY_BASIC_HEADER,
       "Content-type": "application/x-www-form-urlencoded",
     },
-    body: `grant_type=refresh_token&refresh_token=${secret}`,
+    body: `grant_type=refresh_token&refresh_token=${token}`,
   })
     .then((res) => res.json())
     .then(async (body: TokenResponse) => {
       if (body.refresh_token) {
-        await putRefreshToken(id, body.refresh_token);
+        await putUserData(id, body.refresh_token);
       }
 
-      return body.access_token;
+      return {
+        ...tokenResponse,
+        token: body.access_token,
+      };
     });
 };
 

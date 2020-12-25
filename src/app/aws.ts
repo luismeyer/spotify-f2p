@@ -1,5 +1,6 @@
 import AWS from "aws-sdk";
 import { TableName } from "./constants";
+import { TokenDatabaseResponse } from "./typings";
 
 AWS.config.region = "eu-central-1";
 
@@ -7,12 +8,11 @@ const dynamodb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 const converter = AWS.DynamoDB.Converter;
 
-const { AWS_SAM_LOCAL } = process.env;
-
-export const putRefreshToken = (
+export const putUserData = (
   id: string,
   token: string,
   playlistId?: string,
+  url?: string,
 ) =>
   dynamodb
     .putItem({
@@ -21,11 +21,12 @@ export const putRefreshToken = (
         id,
         token,
         playlistId,
+        url,
       }),
     })
     .promise();
 
-export const getRefreshToken = (id: string): Promise<string> =>
+export const getUserData = (id: string) =>
   dynamodb
     .getItem({
       TableName,
@@ -34,7 +35,11 @@ export const getRefreshToken = (id: string): Promise<string> =>
       }),
     })
     .promise()
-    .then((res) => (res.Item ? converter.output(res.Item.token) : ""));
+    .then((res) =>
+      res.Item
+        ? (converter.unmarshall(res.Item) as TokenDatabaseResponse)
+        : undefined,
+    );
 
 export const describeTable = () =>
   dynamodb
@@ -63,5 +68,3 @@ export const createTable = () =>
       BillingMode: "PAY_PER_REQUEST",
     })
     .promise();
-
-export const lambdaBaseUrl = AWS_SAM_LOCAL ? "" : "/Prod";

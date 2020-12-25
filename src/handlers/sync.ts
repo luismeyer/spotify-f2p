@@ -25,10 +25,12 @@ export const syncHandler = async (event: APIGatewayEvent) => {
     return errorResponse();
   }
 
-  const token = await refreshToken(event.queryStringParameters.id);
-  if (!token) {
+  const tokenResponse = await refreshToken(event.queryStringParameters.id);
+  if (!tokenResponse) {
     return errorResponse();
   }
+
+  const { token, url } = tokenResponse;
 
   await clearPlaylist(token);
   console.info("Cleared Playlist");
@@ -52,12 +54,7 @@ export const syncHandler = async (event: APIGatewayEvent) => {
 
   const data = {
     songs: `${tracksCount} Song${tracksCount === 1 ? "" : "s"} wurden `,
-    playlists: [
-      {
-        link: "https://google.com",
-        name: "alles",
-      },
-    ],
+    bitlyUrl: url,
   };
 
   return {

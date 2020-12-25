@@ -23,6 +23,7 @@
     "@types/node-fetch": "^2.5.7",
     "@types/uniqid": "^5.2.0",
     "aws-sdk": "^2.754.0",
+    "bitly": "^7.1.0",
     "dotenv": "^8.2.0",
     "handlebars": "^4.7.6",
     "node-fetch": "^2.6.1",
