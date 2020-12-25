@@ -64,5 +64,4 @@ export const createTable = () =>
     })
     .promise();
 
-export const lambdaBaseUrl = (path: string) =>
-  AWS_SAM_LOCAL ? "" : "/" + path.split("/")[1];
+export const lambdaBaseUrl = AWS_SAM_LOCAL ? "" : "/Prod";

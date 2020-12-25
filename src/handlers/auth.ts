@@ -46,7 +46,7 @@ export const authHandler = async (event: APIGatewayEvent) => {
   }
 
   const { code, playlistId, token } = event.queryStringParameters;
-  const baseUrl = lambdaBaseUrl(event.path);
+  console.log("PATH", event.path);
 
   // Save refresh Token and redirect to Sync Page
   if (playlistId && token) {
@@ -58,7 +58,7 @@ export const authHandler = async (event: APIGatewayEvent) => {
     return {
       statusCode: 302,
       headers: {
-        Location: `${baseUrl}/sync?id=${userId}`,
+        Location: `${lambdaBaseUrl}/sync?id=${userId}`,
       },
     };
   }
@@ -73,7 +73,7 @@ export const authHandler = async (event: APIGatewayEvent) => {
       .filter((p) => p.owner.id === id)
       .map((p) => ({
         name: p.name,
-        link: `${baseUrl}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
+        link: `${lambdaBaseUrl}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
       })),
   );
 
