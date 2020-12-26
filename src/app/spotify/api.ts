@@ -165,7 +165,7 @@ export const simplifyTrack = (track: Track) => ({
 
 export const generateAuthURL = () => {
   const scope =
-    "playlist-modify-public playlist-read-private user-library-read playlist-modify-private user-read-email user-read-private";
+    "playlist-modify-public playlist-read-private user-library-read playlist-modify-private";
 
   const state = generateRandomString(16);
 
