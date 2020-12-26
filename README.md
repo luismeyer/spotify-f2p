@@ -9,7 +9,7 @@ Spotify-f2p is a Node AWS Lambda triggered by an API Gateway that syncs all trac
 
 ## Usage 🛠
 
-You can register for the Service [here](https://yj8g7k9t41.execute-api.eu-central-1.amazonaws.com/Prod/auth). After authorizing you can pick the playlist that is uses for the sync. Then you will be redirected to the sync page. There will be a bit.ly link that you can safe for later use.
+You can register for the Service [here](https://yj8g7k9t41.execute-api.eu-central-1.amazonaws.com/Prod/auth). After authorizing you can pick the playlist that is used for the sync. Then you will be redirected to the sync page. (There is a bit.ly link that you can safe for later usage)
 
 ## Development 👩‍💻👨‍💻
 
