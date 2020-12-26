@@ -1,8 +1,8 @@
 import fetch, { RequestInit } from "node-fetch";
 import querystring from "querystring";
 
-import { generateRandomString } from "./utils";
-import { putUserData, getUserData } from "./aws";
+import { generateRandomString } from "../utils";
+import { putUserData, getUserData } from "../aws";
 import {
   PlaylistsResponse,
   SnapshotResponse,
@@ -13,8 +13,8 @@ import {
   BaseResponse,
   Error,
   UserResponse,
-} from "./typings";
-import { lambdaURL } from "./constants";
+} from "../typings";
+import { lambdaURL } from "../constants";
 
 const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
 

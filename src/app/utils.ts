@@ -32,3 +32,6 @@ export const generateRandomString = (length: number) => {
 
   return text;
 };
+
+export const countNestedArray = (array: unknown[][]): number =>
+  array.reduce((acc, curr) => curr.length + acc, 0);

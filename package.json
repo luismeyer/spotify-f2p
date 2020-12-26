@@ -7,6 +7,7 @@
     "start": "sam local start-api",
     "invoke": "sam local invoke --no-event",
     "watch": "npx tsc --watch",
+    "clean": "rm -rf build",
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",
     "build": "npx tsc",

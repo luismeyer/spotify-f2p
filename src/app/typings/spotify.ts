@@ -78,10 +78,3 @@ export type Artist = {
 export type ExternalURL = {
   ["key"]: ["value"];
 };
-
-export type TokenDatabaseResponse = {
-  id: string;
-  token: string;
-  playlistId: string;
-  url: string;
-};

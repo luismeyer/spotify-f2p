@@ -1,4 +1,4 @@
-import { asyncIteration, chunkArray } from "./utils";
+import { asyncIteration, chunkArray } from "../utils";
 import {
   getPlaylistTracks,
   trackUri,
@@ -8,7 +8,9 @@ import {
   getPlaylists,
   simplifyTrack,
   iterateItemsRequest,
-} from "./spotify";
+} from "./api";
+
+export * from "./api";
 
 export const clearPlaylist = async (token: string) => {
   const limit = 100;

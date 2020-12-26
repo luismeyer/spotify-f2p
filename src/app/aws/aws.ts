@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
-import { TableName } from "./constants";
-import { TokenDatabaseResponse } from "./typings";
+import { TableName } from "../constants";
+import { TokenDatabaseResponse } from "../typings";
 
 AWS.config.region = "eu-central-1";
 
@@ -41,7 +41,7 @@ export const getUserData = (id: string) =>
         : undefined,
     );
 
-export const describeTable = () =>
+const describeTable = () =>
   dynamodb
     .describeTable({
       TableName,
@@ -49,7 +49,7 @@ export const describeTable = () =>
     .promise()
     .then((res) => res.Table);
 
-export const createTable = () =>
+const createTable = () =>
   dynamodb
     .createTable({
       TableName,
@@ -68,3 +68,20 @@ export const createTable = () =>
       BillingMode: "PAY_PER_REQUEST",
     })
     .promise();
+
+export const setupTable = async () =>
+  createTable()
+    .then(async () => {
+      // Wait for the Table to be fully created
+      let table = await describeTable();
+
+      while (table && table.TableStatus !== "ACTIVE") {
+        await new Promise((res) => {
+          setTimeout(res, 1000);
+        });
+
+        console.log("Creating table...");
+        table = await describeTable();
+      }
+    })
+    .catch(() => console.log("Table already exists"));

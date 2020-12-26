@@ -7,6 +7,10 @@
 
 Spotify-f2p is a Node AWS Lambda triggered by an API Gateway that syncs all tracks from your private library into a public or private playlist. The code is build and deployed using the AWS sam cli.
 
+## Usage 🛠
+
+You can register for the Service [here](https://yj8g7k9t41.execute-api.eu-central-1.amazonaws.com/Prod/auth). After authorizing you can pick the playlist that is uses for the sync. Then you will be redirected to the sync page. There will be a bit.ly link that you can safe for later use.
+
 ## Development 👩‍💻👨‍💻
 
 1. Create a .env file based on the .env example and configure it with your credentials

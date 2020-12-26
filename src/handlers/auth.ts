@@ -1,92 +1,49 @@
+import { ProxyResult } from "aws-lambda";
 import uniqid from "uniqid";
+import fs from "fs";
 import { APIGatewayEvent } from "aws-lambda";
 import path from "path";
 import dotenv from "dotenv";
-import fs from "fs";
 import Handlebars from "handlebars";
-import { Bitly } from "bitly";
 
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
-import { allPlaylists } from "../app";
-import { createTable, describeTable, putUserData } from "../app/aws";
-import { generateAuthURL, getMe, getToken } from "../app/spotify";
-import { isLocal, lambdaURL } from "../app/constants";
+import { generateAuthURL, getMe, getToken, allPlaylists } from "../app/spotify";
+import {
+  redirectResponse,
+  setupTable,
+  putUserData,
+  successResponse,
+} from "../app/aws";
+import { lambdaURL } from "../app/constants";
+import { shortenLink } from "../app/bitly";
 
-const { BITLY_TOKEN } = process.env;
-if (!BITLY_TOKEN) {
-  throw new Error("Missing Env Variable: BITLY_TOKEN");
-}
+const handleTokenAndPlaylist = async (
+  token: string,
+  playlistId: string,
+): Promise<ProxyResult> => {
+  await setupTable();
 
-const bitly = new Bitly(BITLY_TOKEN);
+  const userId = uniqid();
+  const url = await shortenLink(`${lambdaURL}/sync?id=${userId}`);
 
-const setupTable = async () =>
-  createTable()
-    .then(async () => {
-      // Wait for the Table to be fully created
-      let table = await describeTable();
+  await putUserData(userId, token, playlistId, url);
 
-      while (table && table.TableStatus !== "ACTIVE") {
-        await new Promise((res) => {
-          setTimeout(res, 1000);
-        });
+  return redirectResponse(url);
+};
 
-        console.log("Creating table...");
-        table = await describeTable();
-      }
-    })
-    .catch(() => console.log("Table already exists"));
-
-export const authHandler = async (event: APIGatewayEvent) => {
-  // Redirect to Spotify API Auth
-  if (!event.queryStringParameters || !event.queryStringParameters.code) {
-    return {
-      statusCode: 302,
-      headers: {
-        Location: generateAuthURL(),
-      },
-    };
-  }
-
-  const { code, playlistId, token } = event.queryStringParameters;
-  console.log("PATH", event.path);
-
-  // Save refresh Token and redirect to Sync Page
-  if (playlistId && token) {
-    await setupTable();
-
-    const userId = uniqid();
-
-    let url = `${lambdaURL}/sync?id=${userId}`;
-
-    if (!isLocal) {
-      url = await bitly.shorten(url).then((res) => res.link);
-    }
-
-    await putUserData(userId, token, playlistId, url);
-
-    return {
-      statusCode: 302,
-      headers: {
-        Location: url,
-      },
-    };
-  }
-
-  // Get all playlists an render them
+const handleCode = async (code: string): Promise<ProxyResult> => {
   const { refreshToken, accessToken } = await getToken(code);
-
   const { id } = await getMe(accessToken);
+  const rawPlaylists = await allPlaylists(accessToken);
 
-  const playlists = await allPlaylists(accessToken).then((ps) =>
-    ps
-      .filter((p) => p.owner.id === id)
-      .map((p) => ({
-        name: p.name,
-        link: `${lambdaURL}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
-      })),
-  );
+  const playlists = rawPlaylists
+    .filter((p) => p.owner.id === id)
+    .map((p) => ({
+      name: p.name,
+      link: `${lambdaURL}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
+    }));
 
   const source = fs
     .readFileSync(path.resolve(__dirname, "../../templates/auth.html"))
@@ -94,11 +51,22 @@ export const authHandler = async (event: APIGatewayEvent) => {
 
   const template = Handlebars.compile(source);
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "text/html",
-    },
-    body: template({ playlists }),
-  };
+  return successResponse(template({ playlists }));
+};
+
+export const authHandler = async (event: APIGatewayEvent) => {
+  // Redirect to Spotify API Auth
+  if (!event.queryStringParameters || !event.queryStringParameters.code) {
+    return redirectResponse(generateAuthURL());
+  }
+
+  const { code, playlistId, token } = event.queryStringParameters;
+
+  if (playlistId && token) {
+    // Save refresh Token and redirect to Sync Page
+    return handleTokenAndPlaylist(token, playlistId);
+  }
+
+  // Gets all Playlists and render them
+  return handleCode(code);
 };

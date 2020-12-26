@@ -7,20 +7,45 @@ import Handlebars from "handlebars";
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
-import { refreshToken } from "../app/spotify";
-import { clearPlaylist, loadSavedTracks, syncSavedTracks } from "../app";
+import { errorResponse } from "../app/template";
+import { countNestedArray } from "../app/utils";
+import { successResponse } from "../app/aws";
+import {
+  clearPlaylist,
+  loadSavedTracks,
+  syncSavedTracks,
+  refreshToken,
+} from "../app/spotify";
+
+const sync = async (token: string): Promise<string[][]> => {
+  await clearPlaylist(token);
+  console.info("Cleared Playlist");
+
+  const savedTracksBatches = await loadSavedTracks(token);
+  console.info("Loaded saved Tracks");
+
+  await syncSavedTracks(token, savedTracksBatches);
+  console.info("Saved tracks to playlist");
+
+  return savedTracksBatches;
+};
+
+const render = (count: number, url: string) => {
+  const source = fs
+    .readFileSync(path.resolve(__dirname, "../../templates/sync.html"))
+    .toString();
+
+  const template = Handlebars.compile(source);
+
+  const data = {
+    songs: `${count} Song${count === 1 ? "" : "s"} wurden `,
+    bitlyUrl: url,
+  };
+
+  return successResponse(template(data));
+};
 
 export const syncHandler = async (event: APIGatewayEvent) => {
-  const errorResponse = () => ({
-    statusCode: 400,
-    headers: {
-      "Content-Type": "text/html",
-    },
-    body: fs
-      .readFileSync(path.resolve(__dirname, "../../templates/error.html"))
-      .toString(),
-  });
-
   if (!event.queryStringParameters || !event.queryStringParameters.id) {
     return errorResponse();
   }
@@ -31,37 +56,7 @@ export const syncHandler = async (event: APIGatewayEvent) => {
   }
 
   const { token, url } = tokenResponse;
+  const songIds = await sync(token);
 
-  await clearPlaylist(token);
-  console.info("Cleared Playlist");
-
-  const savedTracksBatches = await loadSavedTracks(token);
-  console.info("Loaded saved Tracks");
-
-  await syncSavedTracks(token, savedTracksBatches);
-  console.info("Saved tracks to playlist");
-
-  const tracksCount = savedTracksBatches.reduce(
-    (acc, curr) => curr.length + acc,
-    0,
-  );
-
-  const source = fs
-    .readFileSync(path.resolve(__dirname, "../../templates/sync.html"))
-    .toString();
-
-  const template = Handlebars.compile(source);
-
-  const data = {
-    songs: `${tracksCount} Song${tracksCount === 1 ? "" : "s"} wurden `,
-    bitlyUrl: url,
-  };
-
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "text/html",
-    },
-    body: template(data),
-  };
+  return render(countNestedArray(songIds), url);
 };
