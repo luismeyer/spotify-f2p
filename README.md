@@ -16,10 +16,10 @@ You can register for the Service [here](https://yj8g7k9t41.execute-api.eu-centra
 1. Create a .env file based on the .env example and configure it with your credentials
 2. Start the API local ([Docker](https://www.docker.com/) required)
 
-   ```bash
-   yarn watch
-   yarn start
-   ```
+```bash
+yarn watch
+yarn start
+```
 
 ## Build 🏗
 

@@ -28,6 +28,27 @@ Resources:
                 - "dynamodb:PutItem"
                 - "dynamodb:CreateTable"
               Resource: "*"
+  Api:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda function that syncs spotify songs
+      Runtime: nodejs12.x
+      Handler: build/handlers/api.apiHandler
+      Timeout: 20
+      Events:
+        HttpGet:
+          Type: Api
+          Properties:
+            Path: '/api/'
+            Method: get
+      Policies:
+        - Statement:
+            - Sid: F2PSyncRole
+              Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:PutItem"
+              Resource: "*"
   Sync:
     Type: AWS::Serverless::Function
     Properties:
@@ -41,11 +62,3 @@ Resources:
           Properties:
             Path: '/sync/'
             Method: get
-      Policies:
-        - Statement:
-            - Sid: F2PSyncRole
-              Effect: Allow
-              Action:
-                - "dynamodb:GetItem"
-                - "dynamodb:PutItem"
-              Resource: "*"

@@ -6,11 +6,11 @@
   "scripts": {
     "start": "sam local start-api",
     "invoke": "sam local invoke --no-event",
-    "watch": "npx tsc --watch",
+    "watch": "tsc --watch",
     "clean": "rm -rf build",
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",
-    "build": "npx tsc",
+    "build": "tsc",
     "encrypt": "gpg --symmetric --cipher-algo AES256 secrets/.env",
     "decrypt": "gpg --decrypt --output secrets/.env secrets/.env.gpg",
     "lint": "tslint 'src/**/*.{ts,tsx,js}'"
