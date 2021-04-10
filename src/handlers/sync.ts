@@ -5,6 +5,8 @@ import { resolve } from "path";
 import { successResponse } from "../app/aws";
 import { errorResponse } from "../app/template";
 
+const { STAGE } = process.env;
+
 export const syncHandler = async (event: APIGatewayEvent) => {
   if (!event.queryStringParameters || !event.queryStringParameters.id) {
     return errorResponse();
@@ -19,6 +21,7 @@ export const syncHandler = async (event: APIGatewayEvent) => {
   return successResponse(
     template({
       id: event.queryStringParameters.id,
+      baseUrl: STAGE ? `/${STAGE}` : "",
     }),
   );
 };

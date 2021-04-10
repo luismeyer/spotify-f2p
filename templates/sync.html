@@ -42,7 +42,7 @@
     </style>
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        const res = await fetch("/api?id={{ id }}");
+        const res = await fetch("{{ baseUrl }}/api?id={{ id }}");
         const text = await res.text();
         document.open();
         document.write(text);
