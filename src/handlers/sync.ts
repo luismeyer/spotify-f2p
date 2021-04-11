@@ -1,9 +1,5 @@
 import { APIGatewayEvent } from "aws-lambda";
-import fs from "fs";
-import Handlebars from "handlebars";
-import { resolve } from "path";
-import { successResponse } from "../app/aws";
-import { errorResponse } from "../app/template";
+import { errorResponse, syncResponse } from "../app/template";
 
 const { STAGE } = process.env;
 
@@ -12,16 +8,5 @@ export const syncHandler = async (event: APIGatewayEvent) => {
     return errorResponse();
   }
 
-  const source = fs
-    .readFileSync(resolve(__dirname, "../../templates/sync.html"))
-    .toString();
-
-  const template = Handlebars.compile(source);
-
-  return successResponse(
-    template({
-      id: event.queryStringParameters.id,
-      baseUrl: STAGE ? `/${STAGE}` : "",
-    }),
-  );
+  return syncResponse(event.queryStringParameters.id, STAGE ? `/${STAGE}` : "");
 };

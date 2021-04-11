@@ -1,23 +1,16 @@
-import { ProxyResult } from "aws-lambda";
-import uniqid from "uniqid";
-import fs from "fs";
-import { APIGatewayEvent } from "aws-lambda";
-import path from "path";
+import { APIGatewayEvent, ProxyResult } from "aws-lambda";
 import dotenv from "dotenv";
-import Handlebars from "handlebars";
+import path from "path";
+import uniqid from "uniqid";
 
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
-import { generateAuthURL, getMe, getToken, allPlaylists } from "../app/spotify";
-import {
-  redirectResponse,
-  setupTable,
-  putUserData,
-  successResponse,
-} from "../app/aws";
-import { lambdaURL } from "../app/constants";
+import { putUserData, redirectResponse, setupTable } from "../app/aws";
 import { shortenLink } from "../app/bitly";
+import { lambdaURL } from "../app/constants";
+import { allPlaylists, generateAuthURL, getMe, getToken } from "../app/spotify";
+import { authResponse } from "../app/template";
 
 const handleTokenAndPlaylist = async (
   token: string,
@@ -45,13 +38,7 @@ const handleCode = async (code: string): Promise<ProxyResult> => {
       link: `${lambdaURL}/auth?token=${refreshToken}&playlistId=${p.id}&code=used`,
     }));
 
-  const source = fs
-    .readFileSync(path.resolve(__dirname, "../../templates/auth.html"))
-    .toString();
-
-  const template = Handlebars.compile(source);
-
-  return successResponse(template({ playlists }));
+  return authResponse(playlists);
 };
 
 export const authHandler = async (event: APIGatewayEvent) => {

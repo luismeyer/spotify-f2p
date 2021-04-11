@@ -1,20 +1,17 @@
 import { APIGatewayEvent } from "aws-lambda";
 import dotenv from "dotenv";
-import fs from "fs";
-import Handlebars from "handlebars";
 import path from "path";
 
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
-import { successResponse } from "../app/aws";
 import {
   clearPlaylist,
   loadSavedTracks,
   refreshToken,
   syncSavedTracks,
 } from "../app/spotify";
-import { errorResponse } from "../app/template";
+import { apiResponse, errorResponse } from "../app/template";
 import { countNestedArray } from "../app/utils";
 
 export const apiHandler = async (event: APIGatewayEvent) => {
@@ -40,16 +37,5 @@ export const apiHandler = async (event: APIGatewayEvent) => {
 
   const count = countNestedArray(savedTracksBatches);
 
-  const source = fs
-    .readFileSync(path.resolve(__dirname, "../../templates/api.html"))
-    .toString();
-
-  const template = Handlebars.compile(source);
-
-  const data = {
-    songs: `${count} Song${count === 1 ? "" : "s"} wurden `,
-    bitlyUrl: url,
-  };
-
-  return successResponse(template(data));
+  return apiResponse(`${count} Song${count === 1 ? "" : "s"} wurden`, url);
 };
