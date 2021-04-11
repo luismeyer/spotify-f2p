@@ -1,31 +1,27 @@
 import fetch, { RequestInit } from "node-fetch";
 import querystring from "querystring";
-
-import { generateRandomString } from "../utils";
-import { putUserData, getUserData } from "../aws";
+import { getUserData, putUserData } from "../aws";
+import { lambdaURL } from "../constants";
 import {
+  BaseResponse,
+  Error,
   PlaylistsResponse,
   SnapshotResponse,
   TokenResponse,
-  TrackUri,
-  TracksResponse,
   Track,
-  BaseResponse,
-  Error,
+  TracksResponse,
+  TrackUri,
   UserResponse,
 } from "../typings";
-import { lambdaURL } from "../constants";
+import { generateRandomString } from "../utils";
 
-const { CLIENT_ID, CLIENT_SECRET, PLAYLIST_ID } = process.env;
+const { CLIENT_ID, CLIENT_SECRET } = process.env;
 
 if (!CLIENT_ID) {
   throw Error("Missing Env: 'CLIENT_ID'");
 }
 if (!CLIENT_SECRET) {
   throw Error("Missing Env: 'CLIENT_SECRET'");
-}
-if (!PLAYLIST_ID) {
-  throw Error("Missing Env: 'PLAYLIST_ID'");
 }
 
 const SPOTIFY_BASIC_HEADER =
@@ -108,17 +104,22 @@ export const getPlaylistTracks = async (
   token: string,
   offset: number,
   limit: number,
+  playlistId: string,
 ) =>
   spotifyFetch<TracksResponse>(
     token,
-    `/playlists/${PLAYLIST_ID}/tracks?offset=${offset}&limit=${limit}`,
+    `/playlists/${playlistId}/tracks?offset=${offset}&limit=${limit}`,
     { method: "GET" },
   ).catch((err) => {
     throw Error(`playlist tracks ${err}`);
   });
 
-export const removeTracksFromPlaylist = (token: string, tracks: TrackUri[]) =>
-  spotifyFetch<SnapshotResponse>(token, `/playlists/${PLAYLIST_ID}/tracks`, {
+export const removeTracksFromPlaylist = (
+  token: string,
+  tracks: TrackUri[],
+  playlistId: string,
+) =>
+  spotifyFetch<SnapshotResponse>(token, `/playlists/${playlistId}/tracks`, {
     method: "DELETE",
     body: JSON.stringify({ tracks }),
   }).catch((err) => {
@@ -137,8 +138,12 @@ export const getSavedTracks = async (
     throw Error(`saved tracks ${err}`);
   });
 
-export const addTracksToPlaylist = async (token: string, tracks: string[]) =>
-  spotifyFetch<SnapshotResponse>(token, `/playlists/${PLAYLIST_ID}/tracks`, {
+export const addTracksToPlaylist = async (
+  token: string,
+  tracks: string[],
+  playlistId: string,
+) =>
+  spotifyFetch<SnapshotResponse>(token, `/playlists/${playlistId}/tracks`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify({ uris: tracks }),

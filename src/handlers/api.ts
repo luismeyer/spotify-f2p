@@ -1,34 +1,21 @@
 import { APIGatewayEvent } from "aws-lambda";
 import dotenv from "dotenv";
-import path from "path";
 import fs from "fs";
 import Handlebars from "handlebars";
+import path from "path";
 
 const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
-import { errorResponse } from "../app/template";
-import { countNestedArray } from "../app/utils";
 import { successResponse } from "../app/aws";
 import {
   clearPlaylist,
   loadSavedTracks,
-  syncSavedTracks,
   refreshToken,
+  syncSavedTracks,
 } from "../app/spotify";
-
-const sync = async (token: string): Promise<string[][]> => {
-  await clearPlaylist(token);
-  console.info("Cleared Playlist");
-
-  const savedTracksBatches = await loadSavedTracks(token);
-  console.info("Loaded saved Tracks");
-
-  await syncSavedTracks(token, savedTracksBatches);
-  console.info("Saved tracks to playlist");
-
-  return savedTracksBatches;
-};
+import { errorResponse } from "../app/template";
+import { countNestedArray } from "../app/utils";
 
 export const apiHandler = async (event: APIGatewayEvent) => {
   console.log("APIHANDler", configPath);
@@ -41,8 +28,17 @@ export const apiHandler = async (event: APIGatewayEvent) => {
     return errorResponse();
   }
 
-  const { token, url } = tokenResponse;
-  const count = countNestedArray(await sync(token));
+  const { token, url, playlistId } = tokenResponse;
+  await clearPlaylist(token, playlistId);
+  console.info("Cleared Playlist");
+
+  const savedTracksBatches = await loadSavedTracks(token);
+  console.info("Loaded saved Tracks");
+
+  await syncSavedTracks(token, savedTracksBatches, playlistId);
+  console.info("Saved tracks to playlist");
+
+  const count = countNestedArray(savedTracksBatches);
 
   const source = fs
     .readFileSync(path.resolve(__dirname, "../../templates/api.html"))

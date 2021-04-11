@@ -1,23 +1,23 @@
 import { asyncIteration, chunkArray } from "../utils";
 import {
-  getPlaylistTracks,
-  trackUri,
-  getSavedTracks,
   addTracksToPlaylist,
-  removeTracksFromPlaylist,
   getPlaylists,
-  simplifyTrack,
+  getPlaylistTracks,
+  getSavedTracks,
   iterateItemsRequest,
+  removeTracksFromPlaylist,
+  simplifyTrack,
+  trackUri,
 } from "./api";
 
 export * from "./api";
 
-export const clearPlaylist = async (token: string) => {
+export const clearPlaylist = async (token: string, playlistId: string) => {
   const limit = 100;
 
   // Fetch all songs of the Playlist
   const result = await iterateItemsRequest(limit, (offset: number) =>
-    getPlaylistTracks(token, offset, limit),
+    getPlaylistTracks(token, offset, limit, playlistId),
   );
 
   // Format Fetch Resul to have the right batch size and format
@@ -28,7 +28,7 @@ export const clearPlaylist = async (token: string) => {
   // Remove all Tracks with an async for loop to prevent spotify internal Server errors
   return asyncIteration(
     batches,
-    async (batch) => await removeTracksFromPlaylist(token, batch),
+    async (batch) => await removeTracksFromPlaylist(token, batch, playlistId),
   );
 };
 
@@ -50,11 +50,15 @@ export const loadSavedTracks = async (token: string) => {
   return batches;
 };
 
-export const syncSavedTracks = (token: string, songs: string[][]) => {
+export const syncSavedTracks = (
+  token: string,
+  songs: string[][],
+  playlistId: string,
+) => {
   // Add all songs to the Playlist with an async for loop to prevent spotify internal Server errors
   return asyncIteration(
     songs,
-    async (tracks) => await addTracksToPlaylist(token, tracks),
+    async (tracks) => await addTracksToPlaylist(token, tracks, playlistId),
   );
 };
 
