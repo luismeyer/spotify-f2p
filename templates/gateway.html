@@ -1,0 +1,13 @@
+<style>
+  .auth__link {
+    margin-top: 16px;
+  }
+</style>
+
+<h1>Die Synchronisierung dauert länger als erwartet. Sie läuft im Hintergrund weiter.</h1>
+
+{{#if message}}
+<span>Fehlermeldung: {{ message }}</span>
+{{/if}}
+
+<a class="auth__link" href="{{ baseUrl }}/auth">Hier kannst du dich neu authorisieren</a>

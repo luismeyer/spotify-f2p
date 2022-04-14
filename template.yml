@@ -62,3 +62,16 @@ Resources:
           Properties:
             Path: "/sync/"
             Method: get
+
+  Error:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda function that syncs spotify songs
+      Runtime: nodejs12.x
+      Handler: build/handlers/gateway.timeoutHandler
+      Events:
+        HttpGet:
+          Type: Api
+          Properties:
+            Path: "/error/"
+            Method: get

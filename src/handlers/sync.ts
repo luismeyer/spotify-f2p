@@ -1,6 +1,5 @@
 import { APIGatewayEvent } from "aws-lambda";
 
-import { isLocal } from "../app/constants";
 import { errorResponse, syncResponse } from "../app/template";
 
 export const syncHandler = async ({
@@ -8,10 +7,8 @@ export const syncHandler = async ({
   requestContext: { stage },
 }: APIGatewayEvent) => {
   if (!queryStringParameters || !queryStringParameters.id) {
-    return errorResponse();
+    return errorResponse(stage);
   }
 
-  const baseUrl = !isLocal && stage ? `/${stage}` : "";
-
-  return syncResponse(queryStringParameters.id, baseUrl);
+  return syncResponse(queryStringParameters.id, stage);
 };

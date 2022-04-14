@@ -17,12 +17,12 @@ import { countNestedArray } from "../app/utils";
 export const apiHandler = async (event: APIGatewayEvent) => {
   console.log("APIHANDler", configPath);
   if (!event.queryStringParameters || !event.queryStringParameters.id) {
-    return errorResponse();
+    return errorResponse(event.requestContext.stage);
   }
 
   const tokenResponse = await refreshToken(event.queryStringParameters.id);
   if (!tokenResponse) {
-    return errorResponse();
+    return errorResponse(event.requestContext.stage);
   }
 
   const { token, url, playlistId } = tokenResponse;
