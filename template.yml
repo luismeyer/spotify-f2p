@@ -12,12 +12,12 @@ Resources:
       Description: A Lambda that authorizes Users for the spotify sync
       Runtime: nodejs12.x
       Handler: build/handlers/auth.authHandler
-      Timeout: 20
+      Timeout: 900
       Events:
         HttpGet:
           Type: Api
           Properties:
-            Path: '/auth/'
+            Path: "/auth/"
             Method: get
       Policies:
         - Statement:
@@ -34,12 +34,12 @@ Resources:
       Description: A Lambda function that syncs spotify songs
       Runtime: nodejs12.x
       Handler: build/handlers/api.apiHandler
-      Timeout: 20
+      Timeout: 900
       Events:
         HttpGet:
           Type: Api
           Properties:
-            Path: '/api/'
+            Path: "/api/"
             Method: get
       Policies:
         - Statement:
@@ -55,10 +55,10 @@ Resources:
       Description: A Lambda function that syncs spotify songs
       Runtime: nodejs12.x
       Handler: build/handlers/sync.syncHandler
-      Timeout: 20
+      Timeout: 900
       Events:
         HttpGet:
           Type: Api
           Properties:
-            Path: '/sync/'
+            Path: "/sync/"
             Method: get
