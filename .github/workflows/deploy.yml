@@ -24,10 +24,13 @@ jobs:
         run: gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.PASSPHRASE }}" --output secrets/.env secrets/.env.gpg
 
       - name: Install
-        run: yarn --production
+        run: yarn
 
       - name: Build
         run: yarn build
+
+      - name: Cleanup dependencies
+        run: rm -rf node_modules && yarn --production
 
       - name: Deploy
         run: yarn deploy
