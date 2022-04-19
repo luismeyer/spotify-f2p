@@ -73,7 +73,7 @@ export const timeoutResponse = (message: string, stage: string) => {
     .toString();
 
   const template = Handlebars.compile(timeoutContent);
-  const content = template({ message });
+  const content = template({ message, baseUrl: baseUrl(stage) });
 
   return {
     statusCode: 400,

@@ -3,21 +3,24 @@ import dotenv from "dotenv";
 import path from "path";
 import uniqid from "uniqid";
 
-const configPath = path.resolve(__dirname, "../../secrets/.env");
-dotenv.config({ path: configPath });
-
-import { putUserData, redirectResponse, setupTable } from "../app/aws";
+import { putUserData, redirectResponse } from "../app/aws";
 import { shortenLink } from "../app/bitly";
 import { lambdaURL } from "../app/constants";
-import { allPlaylists, generateAuthURL, getMe, getToken } from "../app/spotify";
+import {
+  generateAuthURL,
+  getMe,
+  getToken,
+  loadAllPlaylists,
+} from "../app/spotify";
 import { authResponse } from "../app/template";
+
+const configPath = path.resolve(__dirname, "../../secrets/.env");
+dotenv.config({ path: configPath });
 
 const handleTokenAndPlaylist = async (
   token: string,
   playlistId: string,
 ): Promise<ProxyResult> => {
-  await setupTable();
-
   const userId = uniqid();
   const url = await shortenLink(`${lambdaURL}/sync?id=${userId}`);
 
@@ -29,7 +32,7 @@ const handleTokenAndPlaylist = async (
 const handleCode = async (code: string): Promise<ProxyResult> => {
   const { refreshToken, accessToken } = await getToken(code);
   const { id } = await getMe(accessToken);
-  const rawPlaylists = await allPlaylists(accessToken);
+  const rawPlaylists = await loadAllPlaylists(accessToken);
 
   const playlists = rawPlaylists
     .filter((p) => p.owner.id === id)

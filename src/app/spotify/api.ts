@@ -29,7 +29,7 @@ const SPOTIFY_BASIC_HEADER =
 
 const redirect_uri = lambdaURL + "/auth";
 
-export const spotifyFetch = <T extends { error?: Error }>(
+const spotifyFetch = <T extends { error?: Error }>(
   token: string,
   endpoint: string,
   options?: Partial<RequestInit>,

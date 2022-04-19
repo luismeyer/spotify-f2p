@@ -6,13 +6,13 @@ const configPath = path.resolve(__dirname, "../../secrets/.env");
 dotenv.config({ path: configPath });
 
 import {
-  clearPlaylist,
-  loadSavedTracks,
+  removeTrackIdsFromPlaylist,
+  loadPlaylistTrackIds,
+  loadSavedTrackIds,
   refreshToken,
-  syncSavedTracks,
+  addTrackIdsToPlaylist,
 } from "../app/spotify";
 import { apiResponse, errorResponse } from "../app/template";
-import { countNestedArray } from "../app/utils";
 
 export const apiHandler = async (event: APIGatewayEvent) => {
   console.log("APIHANDler", configPath);
@@ -20,22 +20,49 @@ export const apiHandler = async (event: APIGatewayEvent) => {
     return errorResponse(event.requestContext.stage);
   }
 
-  const tokenResponse = await refreshToken(event.queryStringParameters.id);
-  if (!tokenResponse) {
+  const dbResponse = await refreshToken(event.queryStringParameters.id);
+  if (!dbResponse) {
     return errorResponse(event.requestContext.stage);
   }
 
-  const { token, url, playlistId } = tokenResponse;
-  await clearPlaylist(token, playlistId);
-  console.info("Cleared Playlist");
+  const { token, url, playlistId } = dbResponse;
 
-  const savedTracksBatches = await loadSavedTracks(token);
+  const playlistTracks = await loadPlaylistTrackIds(token, playlistId);
+
+  const savedTracks = await loadSavedTrackIds(token);
   console.info("Loaded saved Tracks");
 
-  await syncSavedTracks(token, savedTracksBatches, playlistId);
+  // assume by default that all songs will be removed
+  let deleteTracks: string[] = playlistTracks;
+  let addTracks: string[] = [];
+
+  // check all saved songs
+  savedTracks.forEach((track) => {
+    // add song to playlist if its missing
+    if (!playlistTracks.includes(track)) {
+      addTracks = [...addTracks, track];
+      return;
+    }
+
+    // remove song from the to be deleted songs
+    const trackIndex = deleteTracks.indexOf(track);
+
+    deleteTracks = [
+      ...deleteTracks.slice(0, trackIndex),
+      ...deleteTracks.slice(trackIndex + 1, deleteTracks.length),
+    ];
+  });
+
+  await removeTrackIdsFromPlaylist(token, playlistId, deleteTracks);
+  console.info("Cleared Playlist");
+
+  await addTrackIdsToPlaylist(token, addTracks, playlistId);
   console.info("Saved tracks to playlist");
 
-  const count = countNestedArray(savedTracksBatches);
+  const count = deleteTracks.length + addTracks.length;
 
-  return apiResponse(`${count} Song${count === 1 ? "" : "s"} wurden`, url);
+  return apiResponse(
+    `${count} Song${count === 1 ? "" : "s"} wurden synchronisiert`,
+    url,
+  );
 };
