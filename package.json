@@ -2,38 +2,29 @@
   "name": "spotify-f2p",
   "version": "1.0.0",
   "description": "",
-  "main": "src/handlers/sync.js",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "scripts": {
     "start": "sam local start-api",
     "invoke": "sam local invoke --no-event",
-    "watch": "tsc --watch",
-    "clean": "rm -rf build",
+    "watch": "tsc --build --watch",
     "deploy": "sam deploy",
     "deploy:new": "sam deploy --guided",
-    "build": "tsc",
+    "build": "tsc --build",
     "encrypt": "gpg --symmetric --cipher-algo AES256 secrets/.env",
     "decrypt": "gpg --decrypt --output secrets/.env secrets/.env.gpg",
-    "lint": "tslint 'src/**/*.{ts,tsx,js}'"
+    "lint": "tslint 'packages/**/*.{ts,tsx}'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bitly": "^7.1.0",
-    "dotenv": "^8.2.0",
-    "handlebars": "^4.7.6",
-    "node-fetch": "^2.6.1",
-    "uniqid": "^5.2.0"
-  },
   "devDependencies": {
     "husky": "^4.3.0",
     "tslint": "^6.1.3",
-    "typescript": "^4.0.3",
-    "@types/aws-lambda": "^8.10.67",
-    "@types/node": "^14.11.2",
-    "@types/node-fetch": "^2.5.7",
-    "@types/uniqid": "^5.2.0",
-    "aws-sdk": "^2.754.0"
+    "typescript": "^4.0.3"
   },
   "husky": {
     "hooks": {

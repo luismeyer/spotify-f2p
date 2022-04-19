@@ -156,3 +156,7 @@ build
 # Ignore build directory
 .serverless
 .aws-sam
+
+.yarn
+.pnp.cjs
+.pnp.loader.mjs

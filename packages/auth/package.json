@@ -1,0 +1,16 @@
+{
+  "name": "@spotify-f2p/auth",
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.94",
+    "@types/node": "^17.0.25",
+    "@types/uniqid": "^5.3.2",
+    "aws-sdk": "^2.1117.0"
+  },
+  "dependencies": {
+    "@spotify-f2p/aws": "workspace:^",
+    "@spotify-f2p/spotify": "workspace:^",
+    "bitly": "^7.1.2",
+    "uniqid": "^5.4.0"
+  }
+}

@@ -14,5 +14,11 @@
   "editor.tabSize": 2,
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "file:///Users/luis.meyer/Projects/spotify-f2p/.github/workflows/deploy.yml"
-  }
+  },
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

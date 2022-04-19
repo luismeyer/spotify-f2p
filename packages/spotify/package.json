@@ -1,0 +1,13 @@
+{
+  "name": "@spotify-f2p/spotify",
+  "packageManager": "yarn@3.2.0",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "dependencies": {
+    "@spotify-f2p/aws": "workspace:^",
+    "node-fetch": "2"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.1"
+  }
+}

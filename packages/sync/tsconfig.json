@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.default.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+
+    "sourceMap": true,
+    "sourceRoot": "src"
+  },
+  "include": ["src/**/*"],
+  "references": [{ "path": "../spotify" }, { "path": "../aws" }]
+}
