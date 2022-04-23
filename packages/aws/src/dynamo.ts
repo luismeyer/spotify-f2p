@@ -1,45 +1,37 @@
-import AWS from "aws-sdk";
+import {
+  createGetItem,
+  createPutItem,
+  createUpdateItem,
+  DDBClient,
+} from "duenamodb";
+import { isDev } from "./dev";
 
-import { TokenDatabaseResponse } from "./typings";
+const params = isDev
+  ? {
+      region: "localhost",
+      endpoint: "http://localhost:8000",
+      accessKeyId: "DEFAULT_ACCESS_KEY",
+      secretAccessKey: "DEFAULT_SECRET",
+    }
+  : { region: "eu-central-1" };
 
-AWS.config.region = "eu-central-1";
+DDBClient.params = params;
 
-const dynamodb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+const { TABLE_NAME } = process.env;
 
-const converter = AWS.DynamoDB.Converter;
+if (!TABLE_NAME) {
+  throw new Error("Missing Env Variable: TABLE_NAME");
+}
 
-// TODO
-const TableName = "test";
+export type UserData = {
+  id: string;
+  token: string;
+  playlistId?: string;
+  url?: string;
+};
 
-export const putUserData = (
-  id: string,
-  token: string,
-  playlistId?: string,
-  url?: string,
-) =>
-  dynamodb
-    .putItem({
-      TableName,
-      Item: converter.marshall({
-        id,
-        token,
-        playlistId,
-        url,
-      }),
-    })
-    .promise();
+export const saveUser = createPutItem<UserData>(TABLE_NAME);
 
-export const getUserData = (id: string) =>
-  dynamodb
-    .getItem({
-      TableName,
-      Key: converter.marshall({
-        id,
-      }),
-    })
-    .promise()
-    .then((res) =>
-      res.Item
-        ? (converter.unmarshall(res.Item) as TokenDatabaseResponse)
-        : undefined,
-    );
+export const updateUser = createUpdateItem<UserData>(TABLE_NAME, "id");
+
+export const getUser = createGetItem<UserData, string>(TABLE_NAME, "id");

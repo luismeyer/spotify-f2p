@@ -1,4 +1,4 @@
-import { ProxyHandler } from "aws-lambda";
+import { APIGatewayProxyHandler } from "aws-lambda";
 
 import {
   addTrackIdsToPlaylist,
@@ -7,9 +7,10 @@ import {
   refreshToken,
   removeTrackIdsFromPlaylist,
 } from "@spotify-f2p/spotify";
-import { errorResponse, successResponse } from "@spotify-f2p/aws";
+import { errorResponse } from "@spotify-f2p/aws";
+import { syncResponse } from "./response";
 
-export const handler: ProxyHandler = async (event) => {
+export const handle: APIGatewayProxyHandler = async (event) => {
   if (!event.queryStringParameters || !event.queryStringParameters.id) {
     return errorResponse("Missing params");
   }
@@ -20,6 +21,9 @@ export const handler: ProxyHandler = async (event) => {
   }
 
   const { token, playlistId } = dbResponse;
+  if (!playlistId) {
+    return errorResponse("Missing playlist id");
+  }
 
   const playlistTracks = await loadPlaylistTrackIds(token, playlistId);
 
@@ -55,5 +59,5 @@ export const handler: ProxyHandler = async (event) => {
 
   const count = deleteTracks.length + addTracks.length;
 
-  return successResponse({ count });
+  return syncResponse(count);
 };

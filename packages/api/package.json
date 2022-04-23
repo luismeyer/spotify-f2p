@@ -1,0 +1,6 @@
+{
+  "name": "@spotify-f2p/api",
+  "types": "build/index.d.ts",
+  "main": "build/index.js",
+  "packageManager": "yarn@3.2.0"
+}

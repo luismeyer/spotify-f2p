@@ -1,0 +1,147 @@
+service: spotify-f2p-app
+frameworkVersion: "3"
+variablesResolutionMode: 20210326
+
+useDotenv: true
+
+provider:
+  name: aws
+  region: eu-central-1
+  stage: dev
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  environment:
+    BITLY_SECRET: ${env:BITLY_SECRET}
+    FRONTEND_URL: ${env:FRONTEND_URL}
+    BACKEND_URL: ${env:BACKEND_URL}
+    SPOTIFY_CLIENT_SECRET: ${env:SPOTIFY_CLIENT_SECRET}
+    SPOTIFY_CLIENT_ID: ${env:SPOTIFY_CLIENT_ID}
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-s3-sync
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+
+  s3Sync:
+    noSync: true
+    buckets:
+      - bucketName: f2p-frontend
+        localDir: packages/frontend/dist
+
+  config:
+    table: ${self:custom.stage}-f2p-table
+
+  dynamodb:
+    stages:
+      - dev
+    inMemory: false
+    start:
+      port: 8000
+      seed: true
+      migrate: true
+
+package:
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  auth:
+    handler: packages/auth/build/handler.handle
+    events:
+      - http:
+          path: /auth
+          method: get
+    package:
+      include:
+        - packages/auth/**
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+        Resource:
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}"
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}/index/*"
+    environment:
+      TABLE_NAME: ${self:custom.config.table}
+
+  sync:
+    handler: packages/sync/build/handler.handle
+    events:
+      - http:
+          path: /sync
+          method: get
+    timeout: 900
+    package:
+      include:
+        - packages/sync/**
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource:
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}"
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}/index/*"
+    environment:
+      TABLE_NAME: ${self:custom.config.table}
+
+resources:
+  Resources:
+    Table:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.config.table}
+
+    WebsiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        BucketName: !Sub "${AWS::StackName}-root"
+        WebsiteConfiguration:
+          ErrorDocument: "index.html"
+          IndexDocument: "index.html"
+
+    WebsiteBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref WebsiteBucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action: "s3:GetObject"
+              Principal: "*"
+              Resource: !Sub "${WebsiteBucket.Arn}/*"
+
+    CloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          DefaultRootObject: "index.html"
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: true
+          Origins:
+            - CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginKeepaliveTimeout: 5
+                OriginProtocolPolicy: "https-only"
+                OriginReadTimeout: 30
+                OriginSSLProtocols:
+                  - TLSv1
+                  - TLSv1.1
+                  - TLSv1.2
+              DomainName: !GetAtt WebsiteBucket.DomainName
+              Id: !Sub "S3-${AWS::StackName}-root"

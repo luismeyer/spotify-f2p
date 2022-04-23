@@ -4,6 +4,7 @@
     { "path": "packages/auth" },
     { "path": "packages/spotify" },
     { "path": "packages/sync" },
-    { "path": "packages/aws" }
+    { "path": "packages/aws" },
+    { "path": "packages/api" }
   ]
 }

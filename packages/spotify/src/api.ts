@@ -1,7 +1,6 @@
 import fetch, { RequestInit } from "node-fetch";
-import querystring from "querystring";
 
-import { getUserData, putUserData } from "@spotify-f2p/aws";
+import { getUser, updateUser } from "@spotify-f2p/aws";
 
 import {
   BaseResponse,
@@ -15,22 +14,18 @@ import {
   UserResponse,
 } from "./typings";
 
-// TODO
-const frontendURL = "lol";
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = process.env;
 
-const { CLIENT_ID, CLIENT_SECRET } = process.env;
-
-if (!CLIENT_ID) {
-  throw Error("Missing Env: 'CLIENT_ID'");
+if (!SPOTIFY_CLIENT_ID) {
+  throw Error("Missing Env: 'SPOTIFY_CLIENT_ID'");
 }
-if (!CLIENT_SECRET) {
-  throw Error("Missing Env: 'CLIENT_SECRET'");
+if (!SPOTIFY_CLIENT_SECRET) {
+  throw Error("Missing Env: 'SPOTIFY_CLIENT_SECRET'");
 }
 
-const SPOTIFY_BASIC_HEADER =
-  "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
-
-const redirect_uri = frontendURL + "/auth";
+const SPOTIFY_BASIC_HEADER = `Basic ${Buffer.from(
+  `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
+).toString("base64")}`;
 
 const spotifyFetch = <T extends { error?: Error }>(
   token: string,
@@ -58,12 +53,12 @@ const spotifyFetch = <T extends { error?: Error }>(
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
 export const refreshToken = async (id: string) => {
-  const tokenResponse = await getUserData(id);
-  if (!tokenResponse) {
+  const user = await getUser(id);
+  if (!user) {
     return Promise.resolve(undefined);
   }
 
-  const { token } = tokenResponse;
+  const { token } = user;
 
   return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -76,11 +71,14 @@ export const refreshToken = async (id: string) => {
     .then((res) => res.json())
     .then(async (body: TokenResponse) => {
       if (body.refresh_token) {
-        await putUserData(id, body.refresh_token);
+        await updateUser(
+          { ...user, token: body.refresh_token },
+          { updateKeys: ["token"] },
+        );
       }
 
       return {
-        ...tokenResponse,
+        ...user,
         token: body.access_token,
       };
     });
@@ -183,7 +181,9 @@ const generateRandomString = (length: number) => {
   return text;
 };
 
-export const generateAuthURL = () => {
+export const generateAuthURL = (frontendBaseUrl: string) => {
+  const redirect_uri = `${frontendBaseUrl}/redirect`;
+
   const scope =
     "playlist-modify-public playlist-read-private user-library-read playlist-modify-private";
 
@@ -191,19 +191,21 @@ export const generateAuthURL = () => {
 
   return (
     "https://accounts.spotify.com/authorize?" +
-    querystring.stringify({
+    new URLSearchParams({
       response_type: "code",
-      client_id: CLIENT_ID,
+      client_id: SPOTIFY_CLIENT_ID,
       scope,
       redirect_uri,
       state,
-      show_dialog: true,
-    })
+      show_dialog: "true",
+    }).toString()
   );
 };
 
-export const getToken = (code: string) =>
-  fetch("https://accounts.spotify.com/api/token", {
+export const getToken = async (code: string, frontendBaseUrl: string) => {
+  const redirect_uri = `${frontendBaseUrl}/redirect`;
+
+  return fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
       Authorization: SPOTIFY_BASIC_HEADER,
@@ -216,3 +218,4 @@ export const getToken = (code: string) =>
       accessToken: body.access_token as string,
       refreshToken: body.refresh_token as string,
     }));
+};
