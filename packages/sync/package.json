@@ -2,6 +2,7 @@
   "name": "@spotify-f2p/sync",
   "packageManager": "yarn@3.2.0",
   "devDependencies": {
+    "@spotify-f2p/api": "workspace:^",
     "@types/aws-lambda": "^8.10.94",
     "@types/node": "^17.0.25",
     "aws-sdk": "^2.1116.0"

@@ -20,7 +20,7 @@ export const handle: APIGatewayProxyHandler = async (event) => {
     return errorResponse("DB Error");
   }
 
-  const { token, playlistId } = dbResponse;
+  const { token, playlistId, url } = dbResponse;
   if (!playlistId) {
     return errorResponse("Missing playlist id");
   }
@@ -59,5 +59,5 @@ export const handle: APIGatewayProxyHandler = async (event) => {
 
   const count = deleteTracks.length + addTracks.length;
 
-  return syncResponse(count);
+  return syncResponse(count, url ?? "hier fehlt was");
 };

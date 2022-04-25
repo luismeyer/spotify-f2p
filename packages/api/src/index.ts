@@ -1,4 +1,4 @@
-export type Response<T> =
+export type Response<T extends { success: true }> =
   | T
   | {
       success: false;
@@ -23,6 +23,7 @@ export type PlaylistsResponse = Response<{
 export type SyncResponse = Response<{
   success: true;
   count: number;
+  bitlyUrl: string;
 }>;
 
 export type IdResponse = Response<{ success: true; id: string }>;

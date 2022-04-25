@@ -8,5 +8,9 @@
     "sourceRoot": "src"
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../spotify" }, { "path": "../aws" }]
+  "references": [
+    { "path": "../spotify" },
+    { "path": "../aws" },
+    { "path": "../api" }
+  ]
 }
