@@ -14,7 +14,7 @@ import {
 } from "@spotify-f2p/spotify";
 
 import { shortenUrl } from "./bitly";
-import { urlResponse, playlistsResponse } from "./response";
+import { urlResponse, playlistsResponse, idResponse } from "./response";
 
 const { FRONTEND_URL } = process.env;
 if (!FRONTEND_URL) {
@@ -29,11 +29,11 @@ const handleTokenAndPlaylist = async (
   playlistId: string,
 ): Promise<ProxyResult> => {
   const userId = uniqid();
-  const url = await shortenUrl(`/sync?id=${userId}`);
+  const url = await shortenUrl(`${frontendUrl}/sync/${userId}`);
 
   await saveUser({ id: userId, token, playlistId, url });
 
-  return urlResponse(url);
+  return idResponse(userId);
 };
 
 // Fetch all playlists so the user can select one

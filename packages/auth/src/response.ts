@@ -1,4 +1,4 @@
-import { UrlResponse, PlaylistsResponse } from "@spotify-f2p/api";
+import { UrlResponse, PlaylistsResponse, IdResponse } from "@spotify-f2p/api";
 import { successResponse } from "@spotify-f2p/aws";
 
 export const urlResponse = (url: string) =>
@@ -17,3 +17,6 @@ export const playlistsResponse = (playlists: SimplePlaylist[]) =>
     success: true,
     playlists,
   });
+
+export const idResponse = (id: string) =>
+  successResponse<IdResponse>({ success: true, id });

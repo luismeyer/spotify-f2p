@@ -12,7 +12,7 @@ export const App: React.FC = () => {
         <Route path="/" element={<AuthPage />} />
         <Route path="/auth" element={<AuthPage />} />
 
-        <Route path="/sync" element={<SyncPage />} />
+        <Route path="/sync/:id" element={<SyncPage />} />
 
         <Route path="/redirect" element={<RedirectPage />} />
       </Routes>

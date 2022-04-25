@@ -24,3 +24,5 @@ export type SyncResponse = Response<{
   success: true;
   count: number;
 }>;
+
+export type IdResponse = Response<{ success: true; id: string }>;
