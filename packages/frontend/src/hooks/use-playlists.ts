@@ -1,11 +1,11 @@
 import { PlaylistsResponse, SimplePlaylist } from "@spotify-f2p/api";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-export const usePlaylists = () => {
+export const usePlaylists = (code: string) => {
   const [loading, setLoading] = useState(true);
   const playlists = useRef<SimplePlaylist[] | undefined>();
 
-  const query = (code: string) => {
+  useEffect(() => {
     fetch(`${BACKEND_URL}/auth?code=${code}`)
       .then((res) => res.json())
       .then((body: PlaylistsResponse) => {
@@ -17,11 +17,10 @@ export const usePlaylists = () => {
 
         playlists.current = body.playlists;
       });
-  };
+  }, []);
 
   return {
     loading,
     playlists,
-    fetchPlaylists: query,
   };
 };

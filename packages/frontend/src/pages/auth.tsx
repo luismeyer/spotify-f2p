@@ -5,13 +5,13 @@ import {
   AuthContainer,
   AuthLeftView,
   AuthLogin,
-  AuthNoteContainer,
   AuthRightView,
   AuthSpotify,
 } from "../components/auth";
-import { Note, NoteBig } from "../components/icons/note";
+
 import { Phone } from "../components/illustrations/phone";
 import { useAuthUrl } from "../hooks/use-auth-url";
+import { useRandomNotes } from "../hooks/use-random-notes";
 
 export const AuthPage: React.FC = () => {
   const { url } = useAuthUrl();
@@ -22,36 +22,7 @@ export const AuthPage: React.FC = () => {
 
   const [buttonHovered, setButtonHovered] = useState(false);
 
-  useEffect(() => {
-    if (!containerRef.current || notes.current.length) {
-      return;
-    }
-
-    for (let i = 0; i < 10; i++) {
-      const x = Math.floor(
-        containerRef.current.clientWidth * 0.75 * Math.random(),
-      );
-
-      const y = Math.floor(
-        (containerRef.current.clientHeight / 3) * Math.random(),
-      );
-
-      const isWhite = x < containerRef.current.clientWidth / 2;
-
-      notes.current = [
-        ...notes.current,
-        <AuthNoteContainer
-          key={i}
-          x={x}
-          y={y}
-          isWhite={isWhite}
-          rotation={Math.floor(-45 * Math.random())}
-        >
-          {Math.floor(Math.random() * 2) === 1 ? <Note /> : <NoteBig />}
-        </AuthNoteContainer>,
-      ];
-    }
-  }, [containerRef]);
+  useRandomNotes(containerRef, notes, { maxX: 0.75, maxY: 1 / 3 });
 
   const linkClass =
     "animate__animated " + (buttonHovered ? "animate__tada" : "");
@@ -59,7 +30,7 @@ export const AuthPage: React.FC = () => {
   return (
     <AuthContainer ref={containerRef}>
       <AuthLeftView>
-        <h1>Logge dich mit deinem Spotify-Account ein</h1>
+        <h1>Melde dich hier mit Spotify an</h1>
 
         <AuthLogin
           onMouseEnter={() => setButtonHovered(true)}

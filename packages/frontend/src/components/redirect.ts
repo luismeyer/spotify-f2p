@@ -7,9 +7,10 @@ export const RedirectContainer = styled.div`
 
 export const RedirectTitle = styled.h1`
   position: absolute;
-  top: 0;
+  margin: 0;
+  top: 25px;
   left: 30px;
-  font-size: 50px;
+  right: 30px;
   color: #1c2628;
 `;
 

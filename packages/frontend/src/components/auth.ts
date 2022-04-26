@@ -39,22 +39,6 @@ export const AuthLeftView = styled.div`
   }
 `;
 
-export const AuthNoteContainer = styled.div<{
-  x: number;
-  y: number;
-  isWhite: boolean;
-  rotation: number;
-}>`
-  top: ${(props) => props.y}px;
-  left: ${(props) => props.x}px;
-
-  position: absolute;
-
-  fill: ${(props) => (props.isWhite ? "white" : "#1c2628")};
-
-  transform: rotate(${(props) => props.rotation}deg);
-`;
-
 export const AuthRightView = styled.div`
   display: flex;
   max-height: 100vh;

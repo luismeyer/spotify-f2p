@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "../components/loader";
 
 import { Note } from "../components/icons/note";
 import { Window } from "../components/illustrations/window";
@@ -26,25 +27,19 @@ export const RedirectPage: React.FC = () => {
     return null;
   }
 
-  const {
-    fetchPlaylists,
-    playlists,
-    loading: playlistsLoading,
-  } = usePlaylists();
+  const { playlists, loading: playlistsLoading } = usePlaylists(code);
 
   const { fetchSelectPlaylist, id, loading: idLoading } = useSelectPlaylist();
 
   const [top, setTop] = useState(-50);
 
-  useEffect(() => {
-    fetchPlaylists(code);
-  }, []);
-
+  // update the note indicator
   const handleMouseEnter = (event: React.MouseEvent<HTMLHeadingElement>) => {
     const name = event.target as HTMLHeadingElement;
     setTop(name.offsetTop);
   };
 
+  // redirect to sync page if auth completed
   useEffect(() => {
     if (idLoading || !id.current) {
       return;
@@ -53,10 +48,18 @@ export const RedirectPage: React.FC = () => {
     navigate(`/sync/${id.current}`);
   }, [idLoading]);
 
+  // redirect to auth if auth error
+  if (!playlistsLoading && !playlists.current?.length) {
+    navigate("/auth");
+    return null;
+  }
+
   return (
     <RedirectContainer>
       <RedirectLeftView>
-        <RedirectTitle>Playlists</RedirectTitle>
+        <RedirectTitle>
+          In welcher Playlist sollen deine Lieblingssongs gespeichert werden?
+        </RedirectTitle>
         <Window />
 
         <RedirectNoteContainer top={top}>
@@ -65,8 +68,9 @@ export const RedirectPage: React.FC = () => {
       </RedirectLeftView>
 
       <RedirectRightView>
+        {playlistsLoading && <Loader showCaption />}
+
         {!playlistsLoading &&
-          playlists.current &&
           playlists.current?.map((playlist) => (
             <RedirectPlaylistName
               onClick={() => fetchSelectPlaylist(playlist.url)}
