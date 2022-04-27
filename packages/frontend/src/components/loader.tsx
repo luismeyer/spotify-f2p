@@ -13,11 +13,15 @@ const Container = styled.div`
   align-items: center;
 `;
 
+const Caption = styled.span`
+  font-size: 25px;
+`;
+
 type LoaderProps = {
-  showCaption?: boolean;
+  caption?: string;
 };
 
-export const Loader: React.FC<LoaderProps> = ({ showCaption }) => {
+export const Loader: React.FC<LoaderProps> = ({ caption }) => {
   const [dots, setDots] = useState("");
 
   const udpateDots = () => {
@@ -30,6 +34,8 @@ export const Loader: React.FC<LoaderProps> = ({ showCaption }) => {
   };
 
   useInterval(udpateDots, 500);
+
+  const cap = `loading${caption ? " " + caption : ""}${dots}`;
 
   return (
     <Container>
@@ -126,7 +132,7 @@ export const Loader: React.FC<LoaderProps> = ({ showCaption }) => {
           ></animateTransform>
         </path>
       </Svg>
-      {showCaption && <span>loading{dots}</span>}
+      <Caption>{cap}</Caption>
     </Container>
   );
 };

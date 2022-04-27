@@ -18,6 +18,7 @@ provider:
     SPOTIFY_CLIENT_ID: ${env:SPOTIFY_CLIENT_ID}
 
 plugins:
+  - serverless-jetpack
   - serverless-iam-roles-per-function
   - serverless-s3-sync
   - serverless-dynamodb-local
@@ -26,14 +27,14 @@ plugins:
 custom:
   stage: ${opt:stage, self:provider.stage}
 
-  s3Sync:
-    noSync: true
-    buckets:
-      - bucketName: f2p-frontend
-        localDir: packages/frontend/dist
-
   config:
     table: ${self:custom.stage}-f2p-table
+    bucket: ${self:custom.stage}-f2p-frontend
+
+  s3Sync:
+    buckets:
+      - bucketName: ${self:custom.config.bucket}
+        localDir: packages/frontend/dist
 
   dynamodb:
     stages:
@@ -43,6 +44,13 @@ custom:
       port: 8000
       seed: true
       migrate: true
+
+  jetpack:
+    preInclude:
+      - "!**"
+    trace:
+      ignores:
+        - "aws-sdk"
 
 package:
   individually: true
@@ -55,6 +63,7 @@ functions:
       - http:
           path: /auth
           method: get
+          cors: true
     package:
       include:
         - packages/auth/**
@@ -75,6 +84,7 @@ functions:
       - http:
           path: /sync
           method: get
+          cors: true
     timeout: 900
     package:
       include:
@@ -107,7 +117,7 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         AccessControl: PublicRead
-        BucketName: !Sub "${AWS::StackName}-root"
+        BucketName: ${self:custom.config.bucket}
         WebsiteConfiguration:
           ErrorDocument: "index.html"
           IndexDocument: "index.html"
@@ -123,25 +133,3 @@ resources:
               Action: "s3:GetObject"
               Principal: "*"
               Resource: !Sub "${WebsiteBucket.Arn}/*"
-
-    CloudFrontDistribution:
-      Type: AWS::CloudFront::Distribution
-      Properties:
-        DistributionConfig:
-          DefaultRootObject: "index.html"
-          Enabled: true
-          HttpVersion: http2
-          IPV6Enabled: true
-          Origins:
-            - CustomOriginConfig:
-                HTTPPort: 80
-                HTTPSPort: 443
-                OriginKeepaliveTimeout: 5
-                OriginProtocolPolicy: "https-only"
-                OriginReadTimeout: 30
-                OriginSSLProtocols:
-                  - TLSv1
-                  - TLSv1.1
-                  - TLSv1.2
-              DomainName: !GetAtt WebsiteBucket.DomainName
-              Id: !Sub "S3-${AWS::StackName}-root"

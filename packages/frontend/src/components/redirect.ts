@@ -1,8 +1,14 @@
 import styled from "styled-components";
+import { device } from "../styles";
 
 export const RedirectContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
+
+  ${device.tablet} {
+    height: 100vh;
+    grid-template-columns: 1fr 1fr;
+  }
 `;
 
 export const RedirectTitle = styled.h1`
@@ -12,6 +18,11 @@ export const RedirectTitle = styled.h1`
   left: 30px;
   right: 30px;
   color: #1c2628;
+  background-color: white;
+
+  ${device.tablet} {
+    background-color: transparent;
+  }
 `;
 
 export const RedirectLeftView = styled.div`
@@ -22,8 +33,7 @@ export const RedirectLeftView = styled.div`
 export const RedirectRightView = styled.div`
   background-color: #1c2628;
   color: white;
-  padding: 30px 30px 0 30px;
-  height: calc(100vh - 30px);
+  padding: 30px;
   display: grid;
   grid-gap: 20px;
   overflow: scroll;

@@ -14,8 +14,10 @@ export const AuthLogin = styled.a`
 
 export const AuthContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
   position: relative;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  height: 100vh;
 
   ${device.tablet} {
     grid-template-columns: 1fr 1fr;
@@ -30,16 +32,9 @@ export const AuthLeftView = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0 100px;
-  grid-row: 2;
-  height: 100vh;
-
-  ${device.tablet} {
-    grid-row: 1;
-  }
+  padding: 50px;
 `;
 
 export const AuthRightView = styled.div`
   display: flex;
-  max-height: 100vh;
 `;

@@ -11,16 +11,18 @@ import {
 
 import { Phone } from "../components/illustrations/phone";
 import { useAuthUrl } from "../hooks/use-auth-url";
+import { useIsDevice } from "../hooks/use-is-device";
 import { useRandomNotes } from "../hooks/use-random-notes";
 
 export const AuthPage: React.FC = () => {
   const { url } = useAuthUrl();
 
   const containerRef = useRef<HTMLDivElement>(null);
-
   const notes = useRef<JSX.Element[]>([]);
 
   const [buttonHovered, setButtonHovered] = useState(false);
+
+  const isTablet = useIsDevice("tablet");
 
   useRandomNotes(containerRef, notes, { maxX: 0.75, maxY: 1 / 3 });
 
@@ -46,7 +48,7 @@ export const AuthPage: React.FC = () => {
         <Phone />
       </AuthRightView>
 
-      {notes.current.map((note) => note)}
+      {isTablet && notes.current.map((note) => note)}
     </AuthContainer>
   );
 };

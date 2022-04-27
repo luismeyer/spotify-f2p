@@ -15,6 +15,7 @@ import {
 import { usePlaylists } from "../hooks/use-playlists";
 import { useQuery } from "../hooks/use-query";
 import { useSelectPlaylist } from "../hooks/use-select-playlist";
+import { useIsDevice } from "../hooks/use-is-device";
 
 export const RedirectPage: React.FC = () => {
   const query = useQuery();
@@ -32,6 +33,8 @@ export const RedirectPage: React.FC = () => {
   const { fetchSelectPlaylist, id, loading: idLoading } = useSelectPlaylist();
 
   const [top, setTop] = useState(-50);
+
+  const isTablet = useIsDevice("tablet");
 
   // update the note indicator
   const handleMouseEnter = (event: React.MouseEvent<HTMLHeadingElement>) => {
@@ -62,13 +65,15 @@ export const RedirectPage: React.FC = () => {
         </RedirectTitle>
         <Window />
 
-        <RedirectNoteContainer top={top}>
-          <Note />
-        </RedirectNoteContainer>
+        {isTablet && (
+          <RedirectNoteContainer top={top}>
+            <Note />
+          </RedirectNoteContainer>
+        )}
       </RedirectLeftView>
 
       <RedirectRightView>
-        {playlistsLoading && <Loader showCaption />}
+        {playlistsLoading && <Loader />}
 
         {!playlistsLoading &&
           playlists.current?.map((playlist) => (
