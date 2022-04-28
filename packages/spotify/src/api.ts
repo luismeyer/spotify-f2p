@@ -1,4 +1,4 @@
-import fetch, { RequestInit } from "node-fetch";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { getUser, updateUser } from "@spotify-f2p/aws";
 
@@ -27,18 +27,18 @@ const SPOTIFY_BASIC_HEADER = `Basic ${Buffer.from(
   `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
 ).toString("base64")}`;
 
-const spotifyFetch = <T extends { error?: Error }>(
+const spotifyFetch = async <T extends { error?: Error }>(
   token: string,
   endpoint: string,
-  options?: Partial<RequestInit>,
-) =>
-  fetch(`https://api.spotify.com/v1${endpoint}`, {
+  options?: AxiosRequestConfig,
+) => {
+  return axios(`https://api.spotify.com/v1${endpoint}`, {
     ...options,
     headers: {
       Authorization: "Bearer " + token,
     },
   })
-    .then((res) => res.json() as Promise<T>)
+    .then((res) => res.data as Promise<T>)
     .then((res) => {
       if (res.error) {
         throw Error(`Spotify Fetch Error: ${res.error.message}`);
@@ -49,6 +49,7 @@ const spotifyFetch = <T extends { error?: Error }>(
     .catch((err) => {
       throw Error(`Spotify Fetch Error: ${err}`);
     });
+};
 
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
@@ -60,28 +61,26 @@ export const refreshToken = async (id: string) => {
 
   const { token } = user;
 
-  return fetch("https://accounts.spotify.com/api/token", {
+  return axios("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
       Authorization: SPOTIFY_BASIC_HEADER,
       "Content-type": "application/x-www-form-urlencoded",
     },
-    body: `grant_type=refresh_token&refresh_token=${token}`,
-  })
-    .then((res) => res.json())
-    .then(async (body: TokenResponse) => {
-      if (body.refresh_token) {
-        await updateUser(
-          { ...user, token: body.refresh_token },
-          { updateKeys: ["token"] },
-        );
-      }
+    data: `grant_type=refresh_token&refresh_token=${token}`,
+  }).then(async (body: AxiosResponse<TokenResponse>) => {
+    if (body.data.refresh_token) {
+      await updateUser(
+        { ...user, token: body.data.refresh_token },
+        { updateKeys: ["token"] },
+      );
+    }
 
-      return {
-        ...user,
-        token: body.access_token,
-      };
-    });
+    return {
+      ...user,
+      token: body.data.access_token,
+    };
+  });
 };
 
 export const iterateItemsRequest = async <T extends BaseResponse>(
@@ -122,7 +121,7 @@ export const removeTracksFromPlaylist = (
 ) =>
   spotifyFetch<SnapshotResponse>(token, `/playlists/${playlistId}/tracks`, {
     method: "DELETE",
-    body: JSON.stringify({ tracks }),
+    data: JSON.stringify({ tracks }),
   }).catch((err) => {
     throw Error(`remove tracks ${err}`);
   });
@@ -147,7 +146,7 @@ export const addTracksToPlaylist = async (
   spotifyFetch<SnapshotResponse>(token, `/playlists/${playlistId}/tracks`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
-    body: JSON.stringify({ uris: tracks }),
+    data: JSON.stringify({ uris: tracks }),
   }).catch((err) => {
     throw Error(`add tracks ${err}`);
   });
@@ -205,17 +204,15 @@ export const generateAuthURL = (frontendBaseUrl: string) => {
 export const getToken = async (code: string, frontendBaseUrl: string) => {
   const redirect_uri = `${frontendBaseUrl}/redirect`;
 
-  return fetch("https://accounts.spotify.com/api/token", {
+  return axios("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
       Authorization: SPOTIFY_BASIC_HEADER,
       "Content-type": "application/x-www-form-urlencoded",
     },
-    body: `code=${code}&redirect_uri=${redirect_uri}&grant_type=authorization_code`,
-  })
-    .then((res) => res.json())
-    .then(async (body) => ({
-      accessToken: body.access_token as string,
-      refreshToken: body.refresh_token as string,
-    }));
+    data: `code=${code}&redirect_uri=${redirect_uri}&grant_type=authorization_code`,
+  }).then(async (body) => ({
+    accessToken: body.data.access_token as string,
+    refreshToken: body.data.refresh_token as string,
+  }));
 };
