@@ -1,6 +1,5 @@
 service: spotify-f2p-app
 frameworkVersion: "3"
-variablesResolutionMode: 20210326
 
 useDotenv: true
 
@@ -9,7 +8,6 @@ provider:
   region: eu-central-1
   stage: dev
   runtime: nodejs14.x
-  lambdaHashingVersion: 20201221
   environment:
     BITLY_SECRET: ${env:BITLY_SECRET}
     FRONTEND_URL: ${env:FRONTEND_URL}
@@ -20,7 +18,7 @@ provider:
 plugins:
   - serverless-jetpack
   - serverless-iam-roles-per-function
-  - serverless-s3-sync
+  - serverless-s3-deploy
   - serverless-dynamodb-local
   - serverless-offline
 
@@ -32,11 +30,12 @@ custom:
     bucket: ${self:custom.stage}-f2p-frontend
     sync: ${self:service}-${self:custom.stage}-sync
 
-  s3Sync:
-    noSync: true
-    buckets:
-      - bucketName: ${self:custom.config.bucket}
-        localDir: packages/frontend/dist
+  assets:
+    targets:
+      - bucket: ${self:custom.config.bucket}
+        files:
+          - source: packages/frontend/dist
+            globs: "*"
 
   dynamodb:
     stages:
@@ -67,7 +66,7 @@ functions:
           method: get
           cors: true
     package:
-      include:
+      patterns:
         - packages/backend/**
     iamRoleStatements:
       - Effect: Allow
@@ -90,7 +89,7 @@ functions:
     handler: packages/sync/build/handler.handle
     timeout: 900
     package:
-      include:
+      patterns:
         - packages/sync/**
     iamRoleStatements:
       - Effect: Allow

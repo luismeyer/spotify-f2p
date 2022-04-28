@@ -40,7 +40,7 @@ jobs:
         run: npm i -g serverless@3.x
 
       - name: Deploy Frontend
-        run: serverless s3sync --bucket prod-f2p-frontend
+        run: serverless s3deploy --stage prod
 
       - name: Deploy Backend
         run: serverless deploy --stage prod
