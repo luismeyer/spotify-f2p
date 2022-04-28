@@ -1,10 +1,11 @@
 {
   "files": [],
+  "include": [],
   "references": [
-    { "path": "packages/backend" },
-    { "path": "packages/spotify" },
-    { "path": "packages/sync" },
+    { "path": "packages/api" },
     { "path": "packages/aws" },
-    { "path": "packages/api" }
+    { "path": "packages/spotify" },
+    { "path": "packages/backend" },
+    { "path": "packages/sync" }
   ]
 }
