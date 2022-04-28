@@ -35,7 +35,7 @@ custom:
       - bucket: ${self:custom.config.bucket}
         files:
           - source: packages/frontend/dist
-            globs: "*"
+            globs: "**/*"
 
   dynamodb:
     stages:
