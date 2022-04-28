@@ -785,9 +785,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@spotify-f2p/auth@workspace:packages/auth":
+"@spotify-f2p/auth@workspace:packages/backend":
   version: 0.0.0-use.local
-  resolution: "@spotify-f2p/auth@workspace:packages/auth"
+  resolution: "@spotify-f2p/auth@workspace:packages/backend"
   dependencies:
     "@spotify-f2p/api": "workspace:^"
     "@spotify-f2p/aws": "workspace:^"

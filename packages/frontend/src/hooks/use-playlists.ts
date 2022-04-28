@@ -1,12 +1,15 @@
+import { useEffect, useRef, useState } from "react";
+
 import { PlaylistsResponse, SimplePlaylist } from "@spotify-f2p/api";
-import { useState, useRef, useEffect } from "react";
+
+import { backendBasePath } from "../const";
 
 export const usePlaylists = (code: string) => {
   const [loading, setLoading] = useState(true);
   const playlists = useRef<SimplePlaylist[] | undefined>();
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/auth?code=${code}`)
+    fetch(`${BACKEND_URL}/${backendBasePath}?code=${code}`)
       .then((res) => res.json())
       .then((body: PlaylistsResponse) => {
         setLoading(false);

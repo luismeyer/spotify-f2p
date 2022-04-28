@@ -27,3 +27,10 @@ export type SyncResponse = Response<{
 }>;
 
 export type IdResponse = Response<{ success: true; id: string }>;
+
+export type SyncLambdaPayload = {
+  token?: string;
+  playlistId?: string;
+  deleteTracks?: string[];
+  addTracks?: string[];
+};

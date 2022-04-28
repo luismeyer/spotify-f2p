@@ -1,5 +1,6 @@
 import { SyncResponse } from "@spotify-f2p/api";
 import { useState, useRef } from "react";
+import { backendBasePath } from "../const";
 
 export const useSync = () => {
   const [loading, setLoading] = useState(true);
@@ -8,7 +9,7 @@ export const useSync = () => {
   const count = useRef<number | undefined>();
 
   const query = (id: string) => {
-    fetch(`${BACKEND_URL}/sync?id=${id}`)
+    fetch(`${BACKEND_URL}/${backendBasePath}?id=${id}`)
       .then((res) => res.json())
       .then((body: SyncResponse) => {
         setLoading(false);

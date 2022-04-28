@@ -30,8 +30,10 @@ custom:
   config:
     table: ${self:custom.stage}-f2p-table
     bucket: ${self:custom.stage}-f2p-frontend
+    sync: ${self:service}-${self:custom.stage}-sync
 
   s3Sync:
+    noSync: true
     buckets:
       - bucketName: ${self:custom.config.bucket}
         localDir: packages/frontend/dist
@@ -57,16 +59,16 @@ package:
   excludeDevDependencies: true
 
 functions:
-  auth:
-    handler: packages/auth/build/handler.handle
+  backend:
+    handler: packages/backend/build/handler.handle
     events:
       - http:
-          path: /auth
+          path: /backend
           method: get
           cors: true
     package:
       include:
-        - packages/auth/**
+        - packages/backend/**
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -75,16 +77,17 @@ functions:
         Resource:
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}"
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}/index/*"
+      - Effect: Allow
+        Action:
+          - lambda:InvokeFunction
+        Resource:
+          - "arn:aws:lambda:${opt:region, self:provider.region}:*:function:${self:custom.config.sync}"
     environment:
       TABLE_NAME: ${self:custom.config.table}
+      SYNC_LAMBDA: ${self:custom.config.sync}
 
   sync:
     handler: packages/sync/build/handler.handle
-    events:
-      - http:
-          path: /sync
-          method: get
-          cors: true
     timeout: 900
     package:
       include:
