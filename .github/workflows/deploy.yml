@@ -36,6 +36,9 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Setup serverless
+        run: npm i -g serverless@3.x
+
       - name: Deploy Frontend
         run: serverless s3sync --bucket prod-f2p-frontend
 
