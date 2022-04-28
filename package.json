@@ -16,7 +16,7 @@
     "deploy": "serverless deploy --stage prod",
     "build:tsc": "tsc --build",
     "build:workspaces": "yarn workspaces foreach --exclude spotify-f2p run build",
-    "build": "concurrently \"yarn:build:*\"",
+    "build": "yarn build:tsc && yarn build:workspaces",
     "install:db": "sls dynamodb install"
   },
   "keywords": [],
