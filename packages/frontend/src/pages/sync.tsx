@@ -48,7 +48,7 @@ export const SyncPage: React.FC = () => {
       <SyncLeftView>
         {isLoading && <Loader caption={id} />}
 
-        {!isLoading && <span>Ein Fehler is aufgetreten</span>}
+        {!isLoading && !data?.success && <span>Ein Fehler is aufgetreten</span>}
 
         {!isLoading && data?.success && (
           <>
