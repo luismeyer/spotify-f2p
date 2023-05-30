@@ -16,7 +16,6 @@ provider:
     SPOTIFY_CLIENT_ID: ${env:SPOTIFY_CLIENT_ID}
 
 plugins:
-  - serverless-jetpack
   - serverless-iam-roles-per-function
   - serverless-s3-deploy
   - serverless-dynamodb-local
@@ -34,7 +33,7 @@ custom:
     targets:
       - bucket: ${self:custom.config.bucket}
         files:
-          - source: packages/frontend/dist
+          - source: packages/frontend/build
             globs: "**/*"
 
   dynamodb:
@@ -56,6 +55,8 @@ custom:
 package:
   individually: true
   excludeDevDependencies: true
+  patterns:
+    - "!**"
 
 functions:
   backend:
@@ -67,7 +68,7 @@ functions:
           cors: true
     package:
       patterns:
-        - packages/backend/**
+        - packages/backend/build/**
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -90,7 +91,7 @@ functions:
     timeout: 900
     package:
       patterns:
-        - packages/sync/**
+        - packages/sync/build/**
     iamRoleStatements:
       - Effect: Allow
         Action:

@@ -11,6 +11,9 @@ export default () => {
 
   return defineConfig({
     plugins: [react()],
+    build: {
+      outDir: "build",
+    },
     define: {
       BACKEND_URL: JSON.stringify(backendUrl),
     },

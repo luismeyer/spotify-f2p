@@ -1,11 +1,16 @@
 {
   "files": [],
+  "compilerOptions": {
+    "checkJs": true,
+    "noEmit": true
+  },
   "include": [],
   "references": [
     { "path": "packages/api" },
     { "path": "packages/aws" },
-    { "path": "packages/spotify" },
     { "path": "packages/backend" },
+    { "path": "packages/frontend" },
+    { "path": "packages/spotify" },
     { "path": "packages/sync" }
   ]
 }

@@ -12,28 +12,27 @@
     ]
   },
   "scripts": {
-    "build": "yarn build:tsc && yarn build:workspaces",
-    "build:tsc": "tsc --build",
-    "build:workspaces": "yarn workspaces foreach --exclude spotify-f2p run build",
+    "build": "yarn workspaces foreach -vp run build",
+    "build:watch": "yarn workspaces foreach -vp run build:watch",
+    "compile": "tsc --build",
+    "compile:watch": "tsc --build --watch",
     "ddb:admin": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
     "deploy": "serverless deploy --stage prod",
-    "dev": "concurrently 'yarn:dev:*'",
+    "dev:frontend": "yarn workspace @spotify-f2p/frontend dev",
     "dev:sls": "serverless offline start",
-    "dev:workspaces": "yarn workspaces foreach --exclude spotify-f2p run dev",
-    "install:db": "sls dynamodb install",
-    "start": "concurrently 'yarn:dev:*' 'yarn:watch' 'yarn:ddb:admin'",
-    "watch": "tsc --build --watch"
+    "postinstall": "sls dynamodb install",
+    "start": "concurrently 'yarn:dev:*' 'yarn:*:watch' 'yarn:ddb:admin'"
   },
   "devDependencies": {
     "concurrently": "^7.1.0",
     "dynamodb-admin": "^4.5.0",
+    "esbuild": "^0.17.19",
     "serverless": "^3.31.0",
     "serverless-dynamodb-local": "^0.2.40",
     "serverless-iam-roles-per-function": "^3.2.0",
-    "serverless-jetpack": "^0.11.1",
     "serverless-offline": "^8.7.0",
     "serverless-s3-deploy": "^0.10.1",
-    "typescript": "^4.0.3"
+    "typescript": "^5.0.4"
   },
   "packageManager": "yarn@3.2.0"
 }

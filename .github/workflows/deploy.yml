@@ -19,19 +19,20 @@ jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
+          cache: "yarn"
 
       - name: Install
         run: yarn
+
+      - name: Compile
+        run: yarn compile
 
       - name: Build
         run: yarn build

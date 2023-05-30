@@ -1,6 +1,15 @@
 {
   "name": "@spotify-f2p/auth",
-  "packageManager": "yarn@3.2.0",
+  "scripts": {
+    "build": "esbuild src/handler.ts --bundle --platform=node --target=node18 --outdir=build",
+    "build:watch": "yarn build --watch"
+  },
+  "dependencies": {
+    "@spotify-f2p/aws": "workspace:^",
+    "@spotify-f2p/spotify": "workspace:^",
+    "bitly": "^7.1.2",
+    "uniqid": "^5.4.0"
+  },
   "devDependencies": {
     "@spotify-f2p/api": "workspace:^",
     "@types/aws-lambda": "^8.10.94",
@@ -8,10 +17,5 @@
     "@types/uniqid": "^5.3.2",
     "aws-sdk": "^2.1117.0"
   },
-  "dependencies": {
-    "@spotify-f2p/aws": "workspace:^",
-    "@spotify-f2p/spotify": "workspace:^",
-    "bitly": "^7.1.2",
-    "uniqid": "^5.4.0"
-  }
+  "packageManager": "yarn@3.2.0"
 }

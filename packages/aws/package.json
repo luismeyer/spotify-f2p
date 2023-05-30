@@ -1,14 +1,14 @@
 {
   "name": "@spotify-f2p/aws",
-  "packageManager": "yarn@3.2.0",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "duenamodb": "latest"
+  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.94",
     "@types/node": "^17.0.25",
     "aws-sdk": "2.1070.0"
   },
-  "dependencies": {
-    "duenamodb": "latest"
-  }
+  "packageManager": "yarn@3.2.0"
 }

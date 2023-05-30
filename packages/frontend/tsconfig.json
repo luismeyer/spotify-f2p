@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.default.json",
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -14,8 +15,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "src"
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "../api" }]
+  "references": [{ "path": "../api" }]
 }

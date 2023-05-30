@@ -24,6 +24,7 @@ export const SyncLeftView = styled.div`
   justify-content: center;
   flex-direction: column;
   padding: ${LeftPadding}px;
+  min-height: 30vh;
 `;
 
 export const SyncRightView = styled.div`
