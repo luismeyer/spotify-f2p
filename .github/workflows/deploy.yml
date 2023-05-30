@@ -26,22 +26,25 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install
-        run: yarn
+        id: install
+        run: npm ci
 
       - name: Compile
-        run: yarn compile
+        id: compile
+        run: npm run compile
 
       - name: Build
-        run: yarn build
+        id: build
+        run: npm run build
 
       - name: Setup serverless
         run: npm i -g serverless@3.x
 
       - name: Deploy Frontend
-        run: serverless s3deploy --stage prod
+        run: npm run deploy:s3 -- --stage prod
 
       - name: Deploy Backend
-        run: serverless deploy --stage prod
+        run: npm run deploy:sls -- --stage prod
