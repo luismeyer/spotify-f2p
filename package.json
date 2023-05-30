@@ -14,12 +14,12 @@
     "compile": "tsc --build",
     "compile:watch": "tsc --build --watch",
     "ddb:admin": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
+    "deploy:s3": "npx serverless s3deploy",
+    "deploy:sls": "npx serverless deploy",
     "dev:frontend": "npm run -w @spotify-f2p/frontend dev",
     "dev:sls": "serverless offline start",
-    "postinstall": "sls dynamodb install",
-    "start": "concurrently 'npm:dev:*' 'npm:*:watch' 'npm:ddb:admin'",
-    "deploy:s3": "npx serverless s3deploy",
-    "deploy:sls": "npx serverless deploy"
+    "install:db": "sls dynamodb install",
+    "start": "concurrently 'npm:dev:*' 'npm:*:watch' 'npm:ddb:admin'"
   },
   "devDependencies": {
     "concurrently": "^7.1.0",

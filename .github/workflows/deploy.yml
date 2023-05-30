@@ -40,9 +40,6 @@ jobs:
         id: build
         run: npm run build
 
-      - name: Setup serverless
-        run: npm i -g serverless@3.x
-
       - name: Deploy Frontend
         run: npm run deploy:s3 -- --stage prod
 
