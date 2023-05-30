@@ -26,9 +26,14 @@ export const playlistsResponse = (playlists: SimplePlaylist[]) =>
 export const idResponse = (id: string) =>
   successResponse<IdResponse>({ success: true, id });
 
-export const syncResponse = (count: number, url: string) =>
+export const syncResponse = (
+  count: number,
+  bitlyUrl: string,
+  playlistName: string,
+) =>
   successResponse<SyncResponse>({
     success: true,
     count,
-    bitlyUrl: url,
+    bitlyUrl,
+    playlistName,
   });

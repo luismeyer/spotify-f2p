@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Dance } from "../components/illustrations/dance";
 import { Loader } from "../components/loader";
@@ -24,17 +24,14 @@ export const SyncPage: React.FC = () => {
 
   if (!id) {
     navigate("/auth");
+
     return null;
   }
 
-  const { bitlyUrl, count, fetchSync, loading } = useSync();
-
-  useEffect(() => {
-    fetchSync(id);
-  }, []);
+  const { isLoading, data } = useSync(id);
 
   const copy = () => {
-    if (!urlRef.current || !bitlyUrl.current) {
+    if (!urlRef.current || !data?.success) {
       return;
     }
 
@@ -43,31 +40,39 @@ export const SyncPage: React.FC = () => {
     urlRef.current.setSelectionRange(0, 99999); /* For mobile devices */
 
     /* Copy the text inside the text field */
-    navigator.clipboard.writeText(bitlyUrl.current);
+    navigator.clipboard.writeText(data.bitlyUrl);
   };
-
-  const hasData = count.current !== undefined && bitlyUrl.current;
 
   return (
     <SyncContainer>
       <SyncLeftView>
-        {loading && <Loader caption={id} />}
+        {isLoading && <Loader caption={id} />}
 
-        {!loading && !hasData && <span>Ein Fehler is aufgetreten</span>}
+        {!isLoading && <span>Ein Fehler is aufgetreten</span>}
 
-        {!loading && hasData && (
+        {!isLoading && data?.success && (
           <>
-            <SyncTitle>
-              Es wurden {count.current} Songs synchronisiert.
-            </SyncTitle>
+            {data.count === 0 ? (
+              <SyncTitle>
+                <i>{data.playlistName}</i> ist up to date!
+              </SyncTitle>
+            ) : (
+              <SyncTitle>
+                Es werden {Math.abs(data.count)} Songs{" "}
+                {data.count > 0 ? " zu " : " aus "}
+                <i>{data.playlistName}</i>
+                {data.count > 0 ? " hinzugefügt." : " gelöscht."}
+              </SyncTitle>
+            )}
+
             <span>
               Speicher dir diese Url um deine Tracks zu synchronisieren:
-              {}
             </span>
+
             <CopyInput
               ref={urlRef}
               onClick={copy}
-              defaultValue={bitlyUrl.current}
+              defaultValue={data.bitlyUrl}
             />
           </>
         )}

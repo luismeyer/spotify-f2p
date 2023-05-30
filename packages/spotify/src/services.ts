@@ -1,6 +1,7 @@
 import { asyncIteration, chunkArray } from "./utils";
 import {
   addTracksToPlaylist,
+  getPlaylist,
   getPlaylists,
   getPlaylistTracks,
   getSavedTracks,
@@ -75,4 +76,19 @@ export const loadAllPlaylists = async (token: string) => {
   return iterateItemsRequest(limit, (offset: number) =>
     getPlaylists(token, offset, limit),
   );
+};
+
+export const loadPlaylist = async (token: string, playlistId: string) => {
+  const {
+    name,
+    tracks: { total },
+  } = await getPlaylist(token, playlistId);
+
+  return { total, name };
+};
+
+export const loadSavedTotal = async (token: string) => {
+  const { total } = await getSavedTracks(token, 0, 1);
+
+  return total;
 };

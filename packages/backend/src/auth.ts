@@ -19,7 +19,7 @@ export const handleCode = async (code: string): Promise<ProxyResult> => {
     .filter((p) => p.owner.id === id)
     .map((p) => ({
       name: p.name,
-      url: `/backend?token=${refreshToken}&playlistId=${p.id}&code=used`,
+      url: `/backend/register?token=${refreshToken}&playlistId=${p.id}&code=used`,
     }));
 
   return playlistsResponse(playlists);

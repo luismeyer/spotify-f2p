@@ -45,6 +45,13 @@ export type Playlist = {
   owner: UserResponse;
 };
 
+export type PlaylistResponse = Playlist & {
+  tracks: {
+    total: number;
+  };
+  error?: Error;
+};
+
 export type TracksResponse = BaseResponse<TrackResponse>;
 
 export type TrackResponse = {

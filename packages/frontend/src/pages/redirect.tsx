@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader } from "../components/loader";
 
 import { Note } from "../components/icons/note";
 import { Window } from "../components/illustrations/window";
+import { Loader } from "../components/loader";
 import {
   RedirectContainer,
   RedirectLeftView,
@@ -12,25 +12,26 @@ import {
   RedirectRightView,
   RedirectTitle,
 } from "../components/redirect";
+import { useIsDevice } from "../hooks/use-is-device";
 import { usePlaylists } from "../hooks/use-playlists";
 import { useQuery } from "../hooks/use-query";
 import { useSelectPlaylist } from "../hooks/use-select-playlist";
-import { useIsDevice } from "../hooks/use-is-device";
 
 export const RedirectPage: React.FC = () => {
   const query = useQuery();
   const navigate = useNavigate();
 
   const code = query.get("code");
+
   if (!code) {
     navigate("/auth");
 
     return null;
   }
 
-  const { playlists, loading: playlistsLoading } = usePlaylists(code);
+  const { playlists, playlistsLoading } = usePlaylists(code);
 
-  const { fetchSelectPlaylist, id, loading: idLoading } = useSelectPlaylist();
+  const { fetchSelectPlaylist, id, selectLoading } = useSelectPlaylist();
 
   const [top, setTop] = useState(-50);
 
@@ -44,15 +45,15 @@ export const RedirectPage: React.FC = () => {
 
   // redirect to sync page if auth completed
   useEffect(() => {
-    if (idLoading || !id.current) {
+    if (selectLoading || !id) {
       return;
     }
 
-    navigate(`/sync/${id.current}`);
-  }, [idLoading]);
+    navigate(`/sync/${id}`);
+  }, [selectLoading]);
 
   // redirect to auth if auth error
-  if (!playlistsLoading && !playlists.current?.length) {
+  if (!playlistsLoading && !playlists.length) {
     navigate("/auth");
     return null;
   }
@@ -76,7 +77,7 @@ export const RedirectPage: React.FC = () => {
         {playlistsLoading && <Loader />}
 
         {!playlistsLoading &&
-          playlists.current?.map((playlist) => (
+          playlists.map((playlist) => (
             <RedirectPlaylistName
               onClick={() => fetchSelectPlaylist(playlist.url)}
               onMouseEnter={handleMouseEnter}

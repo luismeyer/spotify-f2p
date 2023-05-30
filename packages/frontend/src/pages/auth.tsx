@@ -15,7 +15,7 @@ import { useIsDevice } from "../hooks/use-is-device";
 import { useRandomNotes } from "../hooks/use-random-notes";
 
 export const AuthPage: React.FC = () => {
-  const { url } = useAuthUrl();
+  const { url, loading } = useAuthUrl();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const notes = useRef<JSX.Element[]>([]);
@@ -34,14 +34,16 @@ export const AuthPage: React.FC = () => {
       <AuthLeftView>
         <h1>Melde dich hier mit Spotify an</h1>
 
-        <AuthLogin
-          onMouseEnter={() => setButtonHovered(true)}
-          onMouseLeave={() => setButtonHovered(false)}
-          href={url?.current}
-          className={linkClass}
-        >
-          <AuthSpotify src={Logo} />
-        </AuthLogin>
+        {!loading && (
+          <AuthLogin
+            onMouseEnter={() => setButtonHovered(true)}
+            onMouseLeave={() => setButtonHovered(false)}
+            href={url}
+            className={linkClass}
+          >
+            <AuthSpotify src={Logo} />
+          </AuthLogin>
+        )}
       </AuthLeftView>
 
       <AuthRightView>

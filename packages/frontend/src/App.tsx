@@ -1,21 +1,35 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React, { useCallback } from "react";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import { BareFetcher, SWRConfig } from "swr";
 
+import { backendBasePath } from "./const";
 import { AuthPage } from "./pages/auth";
 import { RedirectPage } from "./pages/redirect";
 import { SyncPage } from "./pages/sync";
 
 export const App: React.FC = () => {
+  const router = createBrowserRouter([
+    { path: "/", element: <Navigate to="/auth" /> },
+    { path: "/auth", element: <AuthPage /> },
+    { path: "/sync/:id", element: <SyncPage /> },
+    { path: "/redirect", element: <RedirectPage /> },
+  ]);
+
+  const fetcher: BareFetcher = useCallback(
+    (resource, init) =>
+      fetch(`${BACKEND_URL}/${backendBasePath}${resource}`, init)
+        .then((res) => res.json())
+        .catch((err) => console.error(err)),
+    [],
+  );
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/auth" element={<AuthPage />} />
-
-        <Route path="/sync/:id" element={<SyncPage />} />
-
-        <Route path="/redirect" element={<RedirectPage />} />
-      </Routes>
-    </BrowserRouter>
+    <SWRConfig value={{ fetcher }}>
+      <RouterProvider router={router} />{" "}
+    </SWRConfig>
   );
 };

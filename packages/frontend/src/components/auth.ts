@@ -17,7 +17,7 @@ export const AuthContainer = styled.div`
   position: relative;
   grid-template-columns: 1fr;
   overflow: hidden;
-  height: 100vh;
+  height: 100dvh;
 
   ${device.tablet} {
     grid-template-columns: 1fr 1fr;

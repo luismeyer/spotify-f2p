@@ -2,10 +2,16 @@ import { ProxyResult } from "aws-lambda";
 import { Lambda } from "aws-sdk";
 import { isDev } from "./dev";
 
-const lambda = new Lambda({
-  region: "eu-central-1",
-  endpoint: isDev ? "http://localhost:3002" : undefined,
-});
+const config: Lambda.ClientConfiguration = isDev
+  ? {
+      region: "localhost",
+      endpoint: "http://localhost:3002",
+      accessKeyId: "DEFAULT_ACCESS_KEY",
+      secretAccessKey: "DEFAULT_SECRET",
+    }
+  : { region: "eu-central-1" };
+
+const lambda = new Lambda(config);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

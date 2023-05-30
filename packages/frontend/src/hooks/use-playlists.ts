@@ -1,29 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import useSWRImmutable from "swr/immutable";
 
-import { PlaylistsResponse, SimplePlaylist } from "@spotify-f2p/api";
-
-import { backendBasePath } from "../const";
+import { PlaylistsResponse } from "@spotify-f2p/api";
 
 export const usePlaylists = (code: string) => {
-  const [loading, setLoading] = useState(true);
-  const playlists = useRef<SimplePlaylist[] | undefined>();
-
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/${backendBasePath}?code=${code}`)
-      .then((res) => res.json())
-      .then((body: PlaylistsResponse) => {
-        setLoading(false);
-
-        if (!body.success) {
-          return;
-        }
-
-        playlists.current = body.playlists;
-      });
-  }, []);
+  const { data, isLoading } = useSWRImmutable<PlaylistsResponse>(
+    `/playlists?code=${code}`,
+  );
 
   return {
-    loading,
-    playlists,
+    playlistsLoading: isLoading,
+    playlists: data?.success ? data.playlists : [],
   };
 };

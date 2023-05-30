@@ -6,7 +6,7 @@ const LeftPadding = 50;
 
 export const SyncContainer = styled.div`
   display: grid;
-  height: 100vh;
+  height: 100dvh;
   grid-template-columns: 1fr;
   overflow: hidden;
 

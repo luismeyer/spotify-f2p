@@ -6,7 +6,7 @@ export const RedirectContainer = styled.div`
   grid-template-columns: 1fr;
 
   ${device.tablet} {
-    height: 100vh;
+    height: 100dvh;
     grid-template-columns: 1fr 1fr;
   }
 `;
@@ -18,7 +18,6 @@ export const RedirectTitle = styled.h1`
   left: 30px;
   right: 30px;
   color: #1c2628;
-  background-color: white;
 
   ${device.tablet} {
     background-color: transparent;

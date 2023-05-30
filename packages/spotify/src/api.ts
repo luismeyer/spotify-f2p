@@ -5,6 +5,7 @@ import { getUser, updateUser } from "@spotify-f2p/aws";
 import {
   BaseResponse,
   Error,
+  PlaylistResponse,
   PlaylistsResponse,
   SnapshotResponse,
   TokenResponse,
@@ -88,12 +89,12 @@ export const iterateItemsRequest = async <T extends BaseResponse>(
   request: (offset: number) => Promise<T>,
 ) => {
   let offset = 0;
-  const result = [] as T["items"];
+  let result: T["items"] = [];
   let { items } = await request(offset);
 
   while (items.length > 0) {
-    result.push(...items);
-    offset += limit;
+    result = [...result, ...items];
+    offset = offset + limit;
     items = await request(offset).then(({ items: i }) => i);
   }
 
@@ -156,7 +157,7 @@ export const getPlaylists = (token: string, offset: number, limit: number) =>
     token,
     `/me/playlists?offset=${offset}&limit=${limit}`,
   ).catch((err) => {
-    throw Error(`get playlist ${err}`);
+    throw Error(`get playlists ${err}`);
   });
 
 export const getMe = (token: string) =>
@@ -216,3 +217,10 @@ export const getToken = async (code: string, frontendBaseUrl: string) => {
     refreshToken: body.data.refresh_token as string,
   }));
 };
+
+export const getPlaylist = async (token: string, playlistId: string) =>
+  spotifyFetch<PlaylistResponse>(token, `/playlists/${playlistId}`).catch(
+    (err) => {
+      throw Error(`get playlist error ${err}`);
+    },
+  );

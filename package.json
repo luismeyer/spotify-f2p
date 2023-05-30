@@ -1,29 +1,33 @@
 {
   "name": "spotify-f2p",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "workspaces": {
     "packages": [
       "packages/*"
     ]
   },
   "scripts": {
-    "dev:sls": "serverless offline start",
-    "dev:workspaces": "yarn workspaces foreach --exclude spotify-f2p run dev",
-    "dev": "concurrently \"yarn:dev:*\"",
-    "watch": "tsc --build --watch",
-    "deploy": "serverless deploy --stage prod",
+    "build": "yarn build:tsc && yarn build:workspaces",
     "build:tsc": "tsc --build",
     "build:workspaces": "yarn workspaces foreach --exclude spotify-f2p run build",
-    "build": "yarn build:tsc && yarn build:workspaces",
-    "install:db": "sls dynamodb install"
+    "ddb:admin": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
+    "deploy": "serverless deploy --stage prod",
+    "dev": "concurrently 'yarn:dev:*'",
+    "dev:sls": "serverless offline start",
+    "dev:workspaces": "yarn workspaces foreach --exclude spotify-f2p run dev",
+    "install:db": "sls dynamodb install",
+    "start": "concurrently 'yarn:dev:*' 'yarn:watch' 'yarn:ddb:admin'",
+    "watch": "tsc --build --watch"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^7.1.0",
+    "dynamodb-admin": "^4.5.0",
+    "serverless": "^3.31.0",
     "serverless-dynamodb-local": "^0.2.40",
     "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-jetpack": "^0.11.1",

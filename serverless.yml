@@ -62,7 +62,7 @@ functions:
     handler: packages/backend/build/handler.handle
     events:
       - http:
-          path: /backend
+          path: /backend/{proxy+}
           method: get
           cors: true
     package:

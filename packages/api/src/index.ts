@@ -24,6 +24,7 @@ export type SyncResponse = Response<{
   success: true;
   count: number;
   bitlyUrl: string;
+  playlistName: string;
 }>;
 
 export type IdResponse = Response<{ success: true; id: string }>;
@@ -31,6 +32,4 @@ export type IdResponse = Response<{ success: true; id: string }>;
 export type SyncLambdaPayload = {
   token?: string;
   playlistId?: string;
-  deleteTracks?: string[];
-  addTracks?: string[];
 };

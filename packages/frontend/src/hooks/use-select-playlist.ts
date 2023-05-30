@@ -1,27 +1,19 @@
 import { IdResponse } from "@spotify-f2p/api";
-import { useState, useRef } from "react";
+import { useState } from "react";
+import useSWRImmutable from "swr/immutable";
 
 export const useSelectPlaylist = () => {
-  const [loading, setLoading] = useState(true);
-  const id = useRef<string | undefined>();
+  const [url, setUrl] = useState<string>();
 
-  const query = (url: string) => {
-    fetch(`${BACKEND_URL}${url}`)
-      .then((res) => res.json())
-      .then((body: IdResponse) => {
-        setLoading(false);
+  const { data, isLoading } = useSWRImmutable<IdResponse>(url);
 
-        if (!body.success) {
-          return;
-        }
-
-        id.current = body.id;
-      });
+  const fetchSelectPlaylist = async (url: string) => {
+    setUrl(url);
   };
 
   return {
-    loading,
-    id,
-    fetchSelectPlaylist: query,
+    selectLoading: isLoading,
+    fetchSelectPlaylist,
+    id: data?.success ? data.id : undefined,
   };
 };
