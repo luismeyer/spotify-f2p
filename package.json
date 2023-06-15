@@ -13,24 +13,14 @@
     "build:watch": "npx lerna run build:watch",
     "compile": "tsc --build",
     "compile:watch": "tsc --build --watch",
-    "ddb:admin": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
-    "deploy:s3": "npx serverless s3deploy",
-    "deploy:sls": "npx serverless deploy",
-    "dev:frontend": "npm run -w @spotify-f2p/frontend dev",
-    "dev:sls": "serverless offline start",
-    "install:db": "sls dynamodb install",
-    "start": "concurrently 'npm:dev:*' 'npm:*:watch' 'npm:ddb:admin'"
+    "deploy": "npx lerna run deploy",
+    "dev": "npx lerna run dev",
+    "start": "concurrently 'npm:dev:*' 'npm:*:watch' 'npm run -w @spotify-f2p/serverless ddb:admin'"
   },
   "devDependencies": {
     "concurrently": "^7.1.0",
-    "dynamodb-admin": "^4.5.0",
     "esbuild": "^0.17.19",
     "lerna": "^6.6.2",
-    "serverless": "^3.31.0",
-    "serverless-dynamodb-local": "^0.2.40",
-    "serverless-iam-roles-per-function": "^3.2.0",
-    "serverless-offline": "^8.7.0",
-    "serverless-s3-deploy": "^0.10.1",
     "typescript": "^5.0.4"
   }
 }
