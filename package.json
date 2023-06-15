@@ -9,18 +9,17 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npx lerna run build",
-    "build:watch": "npx lerna run build:watch",
+    "build": "turbo build",
+    "build:watch": "turbo build:watch",
     "compile": "tsc --build",
     "compile:watch": "tsc --build --watch",
-    "deploy": "npx lerna run deploy",
-    "dev": "npx lerna run dev",
-    "start": "concurrently 'npm:dev:*' 'npm:*:watch' 'npm run -w @spotify-f2p/serverless ddb:admin'"
+    "deploy": "turbo deploy",
+    "dev": "turbo dev build:watch compile:watch"
   },
   "devDependencies": {
-    "concurrently": "^7.1.0",
     "esbuild": "^0.17.19",
     "lerna": "^6.6.2",
+    "turbo": "^1.10.3",
     "typescript": "^5.0.4"
   }
 }

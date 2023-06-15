@@ -1,8 +1,6 @@
 service: spotify-f2p-app
 frameworkVersion: "3"
 
-useDotenv: true
-
 provider:
   name: aws
   region: eu-central-1

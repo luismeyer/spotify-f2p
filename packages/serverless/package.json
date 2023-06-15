@@ -1,10 +1,10 @@
 {
   "name": "@spotify-f2p/serverless",
   "scripts": {
-    "ddb:admin": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
+    "ddb:dev": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
     "ddb:install": "sls dynamodb install",
-    "deploy": "npx serverless deploy",
-    "postdeploy": "npx serverless s3deploy",
+    "deploy": "npx serverless deploy --stage prod",
+    "postdeploy": "npx serverless s3deploy --stage prod",
     "dev": "serverless offline start"
   },
   "devDependencies": {

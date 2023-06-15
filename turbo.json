@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "//#compile": {
+      "dependsOn": ["^compile"],
+      "outputs": ["lib/**"]
+    },
+    "//#compile:watch": {
+      "cache": false,
+      "persistent": true,
+      "outputs": ["lib/**"]
+    },
+    "build": {
+      "dependsOn": ["//#compile"],
+      "outputs": ["dist/**"]
+    },
+    "build:watch": {
+      "dependsOn": ["//#compile"],
+      "outputs": ["dist/**"]
+    },
+    "deploy": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "ddb:dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
