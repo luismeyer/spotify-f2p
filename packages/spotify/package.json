@@ -2,8 +2,15 @@
   "name": "@spotify-f2p/spotify",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "scripts": {
+    "compile": "tsc --build",
+    "compile:watch": "tsc --build --watch"
+  },
   "dependencies": {
     "@spotify-f2p/aws": "*",
     "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "tsconfig": "*"
   }
 }

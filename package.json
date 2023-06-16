@@ -11,8 +11,8 @@
   "scripts": {
     "build": "turbo build",
     "build:watch": "turbo build:watch",
-    "compile": "tsc --build",
-    "compile:watch": "tsc --build --watch",
+    "compile": "turbo compile",
+    "compile:watch": "turbo comile:watch",
     "deploy": "turbo deploy",
     "dev": "turbo dev build:watch compile:watch"
   },

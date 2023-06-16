@@ -1,12 +1,9 @@
 {
-  "extends": "../../tsconfig.default.json",
+  "extends": "tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-
-    "sourceMap": true,
-    "sourceRoot": "src"
+    "baseUrl": "src",
+    "noEmit": true
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "references": [{ "path": "../spotify" }, { "path": "../api" }]
 }

@@ -1,17 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "//#compile": {
+    "compile": {
       "dependsOn": ["^compile"],
       "outputs": ["lib/**"]
     },
-    "//#compile:watch": {
+    "compile:watch": {
       "cache": false,
       "persistent": true,
       "outputs": ["lib/**"]
     },
     "build": {
-      "dependsOn": ["//#compile"],
+      "dependsOn": ["compile"],
       "outputs": ["dist/**"]
     },
     "build:watch": {

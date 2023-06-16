@@ -1,5 +1,12 @@
 {
   "name": "@spotify-f2p/api",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "compile": "tsc --build",
+    "compile:watch": "tsc --build --watch"
+  },
+  "devDependencies": {
+    "tsconfig": "*"
+  }
 }
