@@ -1,6 +1,6 @@
 # Spotify f2p 🎶
 
-[![build shield](https://img.shields.io/github/workflow/status/luismeyer/spotify-f2p/Deploy%20master%20branch/master)](https://github.com/luismeyer/spotify-f2p/actions)
+[![build shield](https://img.shields.io/github/actions/workflow/status/luismeyer/spotify-f2p/deploy.yml?branch=main)](https://github.com/luismeyer/spotify-f2p/actions)
 [![issues shield](https://img.shields.io/github/issues/luismeyer/spotify-f2p)](https://github.com/luismeyer/spotify-f2p/issues)
 ![repo size shield](https://img.shields.io/github/repo-size/luismeyer/spotify-f2p)
 ![version shield](https://img.shields.io/github/package-json/v/luismeyer/spotify-f2p)
@@ -13,36 +13,27 @@ You can register for the Service [here](https://yj8g7k9t41.execute-api.eu-centra
 
 ## Development 👩‍💻👨‍💻
 
-1. Create a .env file based on the .env example and configure it with your credentials
-2. Start the API local ([Docker](https://www.docker.com/) required)
+Make sure you have [direnv](https://direnv.net/) installed.
+
+1. Create a .envrc file based on the example and configure it with your credentials
+2. Run the start script
 
 ```bash
-yarn watch
-yarn start
+npm start
 ```
 
 ## Build 🏗
 
-Use AWS sam to build the Application
-
 ```bash
-yarn build
+npm run build
 ```
 
 ## Deployment 🚀
 
-Deploy the application to AWS either from your local machine or by using the github action. After that enter the Environment variables in the AWS lambda ui.
-
-If you deploy for the first time:
+Deploy the application to AWS either from your local machine or by using the github action. After that enter the Environment variables in the AWS lambda UI.
 
 ```bash
-yarn deploy:new
-```
-
-or just
-
-```bash
-yarn deploy
+npm run deploy
 ```
 
 ## License

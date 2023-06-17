@@ -3,14 +3,13 @@
   "tasks": [
     {
       "label": "compile",
-      "command": "npx",
-      "args": ["tsc", "--build", "--watch"],
+      "command": "npm",
+      "args": ["run", "compile:watch"],
       "isBackground": true,
       "group": {
         "kind": "build",
         "isDefault": true
-      },
-      "problemMatcher": ["$tsc-watch"]
+      }
     }
   ]
 }

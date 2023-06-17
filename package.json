@@ -1,10 +1,9 @@
 {
   "name": "spotify-f2p",
+  "version": "1.0.0",
   "private": true,
-  "description": "",
   "keywords": [],
-  "license": "ISC",
-  "author": "",
+  "license": "MIT",
   "workspaces": [
     "packages/*"
   ],
@@ -12,13 +11,13 @@
     "build": "turbo build",
     "build:watch": "turbo build:watch",
     "compile": "turbo compile",
-    "compile:watch": "turbo comile:watch",
+    "compile:watch": "turbo compile:watch",
+    "ddb:dev": "turbo ddb:dev",
     "deploy": "turbo deploy",
-    "dev": "turbo dev build:watch compile:watch"
+    "start": "turbo --concurrency 25 dev build:watch compile:watch"
   },
   "devDependencies": {
     "esbuild": "^0.17.19",
-    "lerna": "^6.6.2",
     "turbo": "^1.10.3",
     "typescript": "^5.0.4"
   }

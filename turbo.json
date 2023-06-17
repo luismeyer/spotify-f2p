@@ -3,19 +3,24 @@
   "pipeline": {
     "compile": {
       "dependsOn": ["^compile"],
+      "inputs": ["src/**"],
       "outputs": ["lib/**"]
     },
     "compile:watch": {
       "cache": false,
       "persistent": true,
+      "inputs": ["src/**"],
       "outputs": ["lib/**"]
     },
     "build": {
-      "dependsOn": ["compile"],
+      "dependsOn": ["^build", "compile"],
+      "inputs": ["src/**"],
       "outputs": ["dist/**"]
     },
     "build:watch": {
-      "dependsOn": ["//#compile"],
+      "cache": false,
+      "persistent": true,
+      "inputs": ["src/**"],
       "outputs": ["dist/**"]
     },
     "deploy": {},
