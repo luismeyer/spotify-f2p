@@ -15,15 +15,17 @@
     "build": {
       "dependsOn": ["^build", "compile"],
       "inputs": ["src/**"],
-      "outputs": ["dist/**"]
+      "outputs": ["build/**"]
     },
     "build:watch": {
       "cache": false,
       "persistent": true,
       "inputs": ["src/**"],
-      "outputs": ["dist/**"]
+      "outputs": ["build/**"]
     },
-    "deploy": {},
+    "deploy": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

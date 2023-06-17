@@ -45,9 +45,6 @@ custom:
 
 package:
   individually: true
-  excludeDevDependencies: true
-  patterns:
-    - "!**"
 
 functions:
   backend:
@@ -59,7 +56,7 @@ functions:
           cors: true
     package:
       patterns:
-        - ../backend/build/**
+        - ../backend/build/handler.js
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -82,7 +79,7 @@ functions:
     timeout: 900
     package:
       patterns:
-        - ../sync/build/**
+        - ../sync/build/handler.js
     iamRoleStatements:
       - Effect: Allow
         Action:

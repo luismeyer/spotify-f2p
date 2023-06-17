@@ -3,10 +3,10 @@
   "scripts": {
     "ddb:dev": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
     "ddb:install": "sls dynamodb install",
-    "deploy": "npx serverless deploy --stage prod",
-    "postdeploy": "npx serverless s3deploy --stage prod",
-    "dev": "serverless offline start",
-    "package": "serverless package"
+    "deploy": "sls deploy --stage prod",
+    "postdeploy": "sls s3deploy --stage prod",
+    "dev": "sls offline start",
+    "package": "sls package"
   },
   "devDependencies": {
     "dynamodb-admin": "^4.5.0",
