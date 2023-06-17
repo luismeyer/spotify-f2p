@@ -43,13 +43,6 @@ custom:
       seed: true
       migrate: true
 
-  jetpack:
-    preInclude:
-      - "!**"
-    trace:
-      ignores:
-        - "aws-sdk"
-
 package:
   individually: true
   excludeDevDependencies: true

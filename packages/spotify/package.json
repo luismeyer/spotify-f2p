@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@spotify-f2p/aws": "*",
-    "axios": "^0.27.2"
+    "axios": "^1.4.0"
   },
   "devDependencies": {
     "tsconfig": "*"

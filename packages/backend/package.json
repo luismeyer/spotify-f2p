@@ -17,7 +17,6 @@
     "@types/aws-lambda": "^8.10.94",
     "@types/node": "^17.0.25",
     "@types/uniqid": "^5.3.2",
-    "aws-sdk": "^2.1117.0",
     "tsconfig": "*"
   }
 }

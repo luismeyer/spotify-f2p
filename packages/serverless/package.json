@@ -5,7 +5,8 @@
     "ddb:install": "sls dynamodb install",
     "deploy": "npx serverless deploy --stage prod",
     "postdeploy": "npx serverless s3deploy --stage prod",
-    "dev": "serverless offline start"
+    "dev": "serverless offline start",
+    "package": "serverless package"
   },
   "devDependencies": {
     "dynamodb-admin": "^4.5.0",

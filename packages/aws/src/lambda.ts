@@ -1,17 +1,25 @@
 import { ProxyResult } from "aws-lambda";
-import { Lambda } from "aws-sdk";
+
+import {
+  LambdaClient,
+  LambdaClientConfig,
+  InvokeCommand,
+} from "@aws-sdk/client-lambda";
+
 import { isDev } from "./dev";
 
-const config: Lambda.ClientConfiguration = isDev
+const config: LambdaClientConfig = isDev
   ? {
       region: "localhost",
       endpoint: "http://localhost:3002",
-      accessKeyId: "DEFAULT_ACCESS_KEY",
-      secretAccessKey: "DEFAULT_SECRET",
+      credentials: {
+        accessKeyId: "DEFAULT_ACCESS_KEY",
+        secretAccessKey: "DEFAULT_SECRET",
+      },
     }
   : { region: "eu-central-1" };
 
-const lambda = new Lambda(config);
+const lambda = new LambdaClient(config);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,11 +48,11 @@ export const invokeSyncLambda = <T extends object>(
   name: string,
   payload: T,
 ) => {
-  return lambda
-    .invoke({
-      FunctionName: name,
-      InvocationType: "Event",
-      Payload: JSON.stringify(payload),
-    })
-    .promise();
+  const command = new InvokeCommand({
+    FunctionName: name,
+    InvocationType: "Event",
+    Payload: Buffer.from(JSON.stringify(payload)),
+  });
+
+  return lambda.send(command);
 };
