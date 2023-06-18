@@ -33,8 +33,9 @@ export const RedirectRightView = styled.div`
   background-color: #1c2628;
   color: white;
   padding: 30px;
-  display: grid;
-  grid-gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   overflow: scroll;
 `;
 

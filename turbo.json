@@ -24,14 +24,11 @@
       "inputs": ["src/**"],
       "outputs": ["build/**"]
     },
-    "deploy": {
-      "cache": false
-    },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "ddb:dev": {
+    "//#dev": {
       "cache": false,
       "persistent": true
     }

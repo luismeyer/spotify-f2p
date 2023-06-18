@@ -31,7 +31,7 @@ custom:
     targets:
       - bucket: ${self:custom.config.bucket}
         files:
-          - source: ../frontend/build
+          - source: ./packages/frontend/build
             globs: "**/*"
 
   dynamodb:
@@ -45,18 +45,20 @@ custom:
 
 package:
   individually: true
+  patterns:
+    - "!./**"
 
 functions:
   backend:
-    handler: ../backend/build/handler.handle
+    handler: ./packages/backend/build/handler.handle
+    package:
+      patterns:
+        - "./packages/backend/build/handler.js"
     events:
       - http:
           path: /backend/{proxy+}
           method: get
           cors: true
-    package:
-      patterns:
-        - ../backend/build/handler.js
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -75,11 +77,11 @@ functions:
       SYNC_LAMBDA: ${self:custom.config.sync}
 
   sync:
-    handler: ../sync/build/handler.handle
-    timeout: 900
+    handler: ./packages/sync/build/handler.handle
     package:
       patterns:
-        - ../sync/build/handler.js
+        - "./packages/sync/build/handler.js"
+    timeout: 900
     iamRoleStatements:
       - Effect: Allow
         Action:
