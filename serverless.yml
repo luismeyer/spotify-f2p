@@ -65,6 +65,7 @@ functions:
         Action:
           - dynamodb:GetItem
           - dynamodb:PutItem
+          - dynamodb:UpdateItem
         Resource:
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}"
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}/index/*"
@@ -87,6 +88,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
+          - dynamodb:UpdateItem
         Resource:
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}"
           - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.config.table}/index/*"
