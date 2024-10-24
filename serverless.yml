@@ -16,7 +16,7 @@ provider:
 plugins:
   - serverless-iam-roles-per-function
   - serverless-s3-deploy
-  - serverless-dynamodb-local
+  - serverless-dynamodb
   - serverless-offline
 
 custom:
@@ -42,6 +42,7 @@ custom:
       port: 8000
       seed: true
       migrate: true
+      sharedDb: true
 
 package:
   individually: true

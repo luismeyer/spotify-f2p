@@ -1,10 +1,11 @@
-import React, { useCallback } from "react";
+import type React from "react";
+import { useCallback } from "react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { BareFetcher, SWRConfig } from "swr";
+import { type BareFetcher, SWRConfig } from "swr";
 
 import { backendBasePath } from "./const";
 import { AuthPage } from "./pages/auth";

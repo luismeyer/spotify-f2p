@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import type React from "react";
+import { useRef, useState } from "react";
 
 import Logo from "../assets/spotify.png";
 import {
@@ -21,13 +22,11 @@ export const AuthPage: React.FC = () => {
   const notes = useRef<JSX.Element[]>([]);
 
   const [buttonHovered, setButtonHovered] = useState(false);
+  const linkClass = `animate__animated ${buttonHovered ? "animate__tada" : ""}`;
 
   const isTablet = useIsDevice("tablet");
 
   useRandomNotes(containerRef, notes, { maxX: 0.75, maxY: 1 / 3 });
-
-  const linkClass =
-    "animate__animated " + (buttonHovered ? "animate__tada" : "");
 
   return (
     <AuthContainer ref={containerRef}>

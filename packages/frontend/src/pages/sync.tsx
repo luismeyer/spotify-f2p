@@ -1,9 +1,12 @@
-import React, { useRef } from "react";
+import type React from "react";
+import { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { de } from "date-fns/locale";
 
 import { Dance } from "../components/illustrations/dance";
 import { Loader } from "../components/loader";
 import {
+  Button,
   CopyInput,
   SyncContainer,
   SyncLeftView,
@@ -11,6 +14,8 @@ import {
   SyncTitle,
 } from "../components/sync";
 import { useSync } from "../hooks/use-sync";
+import { useInfo } from "../hooks/use-info";
+import { formatDistanceToNow } from "date-fns";
 
 type SyncParams = {
   id: string;
@@ -28,7 +33,11 @@ export const SyncPage: React.FC = () => {
     return null;
   }
 
-  const { isLoading, data } = useSync(id);
+  const { isLoading, data, mutate } = useSync(id);
+  const { isLoading: isInfoLoading, data: infoData } = useInfo(
+    id,
+    data?.success ?? false,
+  );
 
   const copy = () => {
     if (!urlRef.current || !data?.success) {
@@ -43,12 +52,36 @@ export const SyncPage: React.FC = () => {
     navigator.clipboard.writeText(data.bitlyUrl);
   };
 
+  if (isInfoLoading) {
+    return null;
+  }
+
   return (
     <SyncContainer>
       <SyncLeftView>
-        {isLoading && <Loader caption={id} />}
+        {(isLoading || (infoData?.success && infoData.blocked)) && (
+          <Loader caption={id} />
+        )}
 
-        {!isLoading && !data?.success && <span>Ein Fehler is aufgetreten</span>}
+        {!isLoading && data && !data.success && (
+          <span>Ein Fehler is aufgetreten</span>
+        )}
+
+        {!isLoading &&
+          !data?.success &&
+          infoData?.success &&
+          !infoData.blocked && (
+            <div>
+              <SyncTitle>
+                Zuletzt vor{" "}
+                {formatDistanceToNow(infoData.syncedAt, { locale: de })}{" "}
+                aktualisiert
+              </SyncTitle>
+              <Button type="button" onClick={() => mutate()}>
+                Synchronisieren
+              </Button>
+            </div>
+          )}
 
         {!isLoading && data?.success && (
           <>

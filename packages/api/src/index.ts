@@ -30,6 +30,14 @@ export type SyncResponse = Response<{
 export type IdResponse = Response<{ success: true; id: string }>;
 
 export type SyncLambdaPayload = {
-  token?: string;
-  playlistId?: string;
+  token: string;
+  playlistId: string;
+  userId: string;
 };
+
+export type InfoResponse = Response<{
+  success: true;
+  bitlyUrl: string;
+  syncedAt: number;
+  blocked: boolean;
+}>;

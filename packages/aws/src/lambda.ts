@@ -1,9 +1,9 @@
-import { ProxyResult } from "aws-lambda";
+import type { ProxyResult } from "aws-lambda";
 
 import {
-  LambdaClient,
-  LambdaClientConfig,
   InvokeCommand,
+  LambdaClient,
+  type LambdaClientConfig,
 } from "@aws-sdk/client-lambda";
 
 import { isDev } from "./dev";
@@ -44,7 +44,7 @@ export const successResponse = <T extends object>(content: T): ProxyResult => ({
   }),
 });
 
-export const invokeSyncLambda = <T extends object>(
+export const invokeAsyncLambda = <T extends object>(
   name: string,
   payload: T,
 ) => {

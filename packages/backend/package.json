@@ -1,13 +1,14 @@
 {
-  "name": "@spotify-f2p/auth",
+  "name": "@spotify-f2p/backend",
   "scripts": {
     "build": "esbuild src/handler.ts --bundle --platform=node --target=node18 --outdir=build",
     "build:watch": "npm run build --watch",
     "compile": "tsc --build",
-    "compile:watch": "tsc --build --watch"
+    "compile:watch": "tsc --build --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@spotify-f2p/aws": "*",
+    "@spotify-f2p/api": "*",
     "@spotify-f2p/spotify": "*",
     "bitly": "^7.1.2",
     "uniqid": "^5.4.0"

@@ -4,6 +4,7 @@ import {
   createUpdateItem,
   DDBClient,
 } from "duenamodb";
+
 import { isDev } from "./dev";
 
 const params = isDev
@@ -28,6 +29,8 @@ export type UserData = {
   token: string;
   playlistId?: string;
   url?: string;
+  syncedAt?: number;
+  lockedAt?: number | null;
 };
 
 export const saveUser = createPutItem<UserData>(TABLE_NAME);

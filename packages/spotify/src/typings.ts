@@ -1,4 +1,4 @@
-export type Error = {
+export type SpotifyError = {
   status: number;
   message: string;
 };
@@ -15,22 +15,22 @@ export type UserResponse = {
   id: string;
   display_name: string;
   href: string;
-  error?: Error;
+  error?: SpotifyError;
 };
 
 export type SnapshotResponse = {
   snapshot_id: string;
-  error?: Error;
+  error?: SpotifyError;
 };
 
-export type BaseResponse<T = {}> = {
+export type BaseResponse<T = object> = {
   href: string;
   limit: number;
   next: string;
   offset: number;
   previous: string;
   total: number;
-  error?: Error;
+  error?: SpotifyError;
   items: T[];
 };
 
@@ -49,7 +49,7 @@ export type PlaylistResponse = Playlist & {
   tracks: {
     total: number;
   };
-  error?: Error;
+  error?: SpotifyError;
 };
 
 export type TracksResponse = BaseResponse<TrackResponse>;
@@ -83,5 +83,5 @@ export type Artist = {
 };
 
 export type ExternalURL = {
-  ["key"]: ["value"];
+  key: ["value"];
 };

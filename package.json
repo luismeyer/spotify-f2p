@@ -12,7 +12,7 @@
     "build:watch": "turbo build:watch",
     "compile": "turbo compile",
     "compile:watch": "turbo compile:watch",
-    "db:dev": "DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
+    "db:dev": "AWS_REGION=eu-west-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin",
     "db:install": "sls dynamodb install",
     "deploy": "sls deploy --stage prod",
     "postdeploy": "sls s3deploy --stage prod",
@@ -20,14 +20,14 @@
     "start": "turbo --concurrency 25 dev build:watch compile:watch"
   },
   "devDependencies": {
-    "dynamodb-admin": "^4.5.0",
+    "dynamodb-admin": "^4.6.0",
     "esbuild": "^0.17.19",
     "serverless": "^3.31.0",
-    "serverless-dynamodb-local": "^0.2.40",
     "serverless-iam-roles-per-function": "^3.2.0",
     "serverless-offline": "^8.7.0",
     "serverless-s3-deploy": "^0.10.1",
     "turbo": "^1.10.3",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "serverless-dynamodb": "^0.2.54"
   }
 }

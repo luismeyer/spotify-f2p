@@ -1,10 +1,10 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
-import { getUser, updateUser } from "@spotify-f2p/aws";
+import { type UserData, updateUser } from "@spotify-f2p/aws";
 
-import {
+import type {
   BaseResponse,
-  Error,
+  SpotifyError,
   PlaylistResponse,
   PlaylistsResponse,
   SnapshotResponse,
@@ -28,7 +28,7 @@ const SPOTIFY_BASIC_HEADER = `Basic ${Buffer.from(
   `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
 ).toString("base64")}`;
 
-const spotifyFetch = async <T extends { error?: Error }>(
+const spotifyFetch = async <T extends { error?: SpotifyError }>(
   token: string,
   endpoint: string,
   options?: AxiosRequestConfig,
@@ -36,7 +36,7 @@ const spotifyFetch = async <T extends { error?: Error }>(
   return axios(`https://api.spotify.com/v1${endpoint}`, {
     ...options,
     headers: {
-      Authorization: "Bearer " + token,
+      Authorization: `Bearer ${token}`,
     },
   })
     .then((res) => res.data as Promise<T>)
@@ -54,12 +54,7 @@ const spotifyFetch = async <T extends { error?: Error }>(
 
 export const trackUri = (id: string) => `spotify:track:${id}`;
 
-export const refreshToken = async (id: string) => {
-  const user = await getUser(id);
-  if (!user) {
-    return Promise.resolve(undefined);
-  }
-
+export const refreshToken = async (user: UserData) => {
   const { token } = user;
 
   return axios("https://accounts.spotify.com/api/token", {
@@ -161,7 +156,7 @@ export const getPlaylists = (token: string, offset: number, limit: number) =>
   });
 
 export const getMe = (token: string) =>
-  spotifyFetch<UserResponse>(token, `/me`).catch((err) => {
+  spotifyFetch<UserResponse>(token, "/me").catch((err) => {
     throw Error(`get me ${err}`);
   });
 
@@ -189,17 +184,14 @@ export const generateAuthURL = (frontendBaseUrl: string) => {
 
   const state = generateRandomString(16);
 
-  return (
-    "https://accounts.spotify.com/authorize?" +
-    new URLSearchParams({
-      response_type: "code",
-      client_id: SPOTIFY_CLIENT_ID,
-      scope,
-      redirect_uri,
-      state,
-      show_dialog: "true",
-    }).toString()
-  );
+  return `https://accounts.spotify.com/authorize?${new URLSearchParams({
+    response_type: "code",
+    client_id: SPOTIFY_CLIENT_ID,
+    scope,
+    redirect_uri,
+    state,
+    show_dialog: "true",
+  }).toString()}`;
 };
 
 export const getToken = async (code: string, frontendBaseUrl: string) => {

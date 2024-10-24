@@ -1,4 +1,4 @@
-import { ProxyResult } from "aws-lambda";
+import type { ProxyResult } from "aws-lambda";
 
 import { getMe, getToken, loadAllPlaylists } from "@spotify-f2p/spotify";
 

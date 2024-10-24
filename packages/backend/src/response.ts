@@ -1,8 +1,9 @@
-import {
+import type {
   UrlResponse,
   PlaylistsResponse,
   IdResponse,
   SyncResponse,
+  InfoResponse,
 } from "@spotify-f2p/api";
 import { successResponse } from "@spotify-f2p/aws";
 
@@ -26,14 +27,6 @@ export const playlistsResponse = (playlists: SimplePlaylist[]) =>
 export const idResponse = (id: string) =>
   successResponse<IdResponse>({ success: true, id });
 
-export const syncResponse = (
-  count: number,
-  bitlyUrl: string,
-  playlistName: string,
-) =>
-  successResponse<SyncResponse>({
-    success: true,
-    count,
-    bitlyUrl,
-    playlistName,
-  });
+export const syncResponse = (options: SyncResponse) => successResponse(options);
+
+export const infoResponse = (options: InfoResponse) => successResponse(options);

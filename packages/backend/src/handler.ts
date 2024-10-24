@@ -1,11 +1,12 @@
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
+import type { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
 
-import { errorResponse } from "@spotify-f2p/aws";
+import { errorResponse, getUser, updateUser } from "@spotify-f2p/aws";
 import { generateAuthURL } from "@spotify-f2p/spotify";
 
-import { urlResponse } from "./response";
+import { infoResponse, urlResponse } from "./response";
 import { handleCode, handleTokenAndPlaylist } from "./auth";
-import { handleId } from "./sync";
+import { sync } from "./sync";
+import { isUserLocked } from "./lock";
 
 const { FRONTEND_URL } = process.env;
 if (!FRONTEND_URL) {
@@ -28,13 +29,45 @@ export const handle: APIGatewayProxyHandler = async (event) => {
     // Redirect to Spotify API Auth
     route("auth", async () => urlResponse(generateAuthURL(frontendUrl))),
 
+    route("info", async () => {
+      if (!id) {
+        throw new Error("Missing 'id' param");
+      }
+
+      const user = await getUser(id);
+      if (!user) {
+        return errorResponse("User not found");
+      }
+
+      return infoResponse({
+        success: true,
+        bitlyUrl: user.url ?? "hier fehlt was",
+        syncedAt: user.syncedAt ?? 0,
+        blocked: isUserLocked(user),
+      });
+    }),
+
     // Fetch songs, calc playlist diff and invoke sync lambda
     route("sync", async () => {
       if (!id) {
         throw new Error("Missing 'id' param");
       }
 
-      return handleId(id).catch((e) => errorResponse(`Error: ${e}`));
+      const user = await getUser(id);
+      if (!user) {
+        return errorResponse("User not found");
+      }
+
+      if (isUserLocked(user)) {
+        return errorResponse("User locked");
+      }
+
+      await updateUser(
+        { ...user, lockedAt: Date.now() },
+        { updateKeys: ["lockedAt"] },
+      );
+
+      return sync(user).catch((e) => errorResponse(`Error: ${e}`));
     }),
 
     // Fetch all Playlists
@@ -65,10 +98,11 @@ export const handle: APIGatewayProxyHandler = async (event) => {
   try {
     return handler.run();
   } catch (e) {
+    console.log(e);
     if (e instanceof Error) {
       return errorResponse(e.message);
     }
 
-    return errorResponse("Unknown Error " + e);
+    return errorResponse(`Unknown Error ${e}`);
   }
 };

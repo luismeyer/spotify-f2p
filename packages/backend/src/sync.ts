@@ -1,5 +1,9 @@
-import { SyncLambdaPayload } from "@spotify-f2p/api";
-import { errorResponse, invokeSyncLambda } from "@spotify-f2p/aws";
+import type { SyncLambdaPayload } from "@spotify-f2p/api";
+import {
+  type UserData,
+  errorResponse,
+  invokeAsyncLambda,
+} from "@spotify-f2p/aws";
 import {
   loadPlaylist,
   loadSavedTotal,
@@ -13,8 +17,8 @@ if (!SYNC_LAMBDA) {
   throw new Error("Missing Env: SYNC_LAMBDA");
 }
 
-export const handleId = async (id: string) => {
-  const dbResponse = await refreshToken(id);
+export const sync = async (user: UserData) => {
+  const dbResponse = await refreshToken(user);
   if (!dbResponse) {
     return errorResponse("DB Error");
   }
@@ -24,9 +28,10 @@ export const handleId = async (id: string) => {
     return errorResponse("Missing playlist id");
   }
 
-  await invokeSyncLambda<SyncLambdaPayload>(SYNC_LAMBDA, {
+  await invokeAsyncLambda<SyncLambdaPayload>(SYNC_LAMBDA, {
     playlistId,
     token,
+    userId: user.id,
   });
 
   const { name, total } = await loadPlaylist(token, playlistId);
@@ -34,5 +39,10 @@ export const handleId = async (id: string) => {
 
   const count = savedTotal - total;
 
-  return syncResponse(count, url ?? "hier fehlt was", name);
+  return syncResponse({
+    success: true,
+    count,
+    bitlyUrl: url ?? "hier fehlt was",
+    playlistName: name,
+  });
 };
